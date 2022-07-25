@@ -11,3 +11,4 @@ lazy val root = (project in file("."))
     name := "user_manager",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "test"
 )
+
