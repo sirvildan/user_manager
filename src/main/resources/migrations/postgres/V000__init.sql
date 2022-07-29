@@ -1,14 +1,21 @@
-CREATE TABLE "User"
+create table if not exists "User"
 (
-    id    serial not null,
-    email text,
+    id    serial
+        primary key,
+    email varchar(128) not null
+        unique,
     name  text,
-    age   int
+    age   integer
 );
 
-CREATE TABLE UserMeta
+create table if not exists usermeta
 (
-    id           serial not null,
+    id           serial
+        primary key,
+    email        varchar(128) not null
+        unique
+        references "User" (email)
+            on delete cascade,
     hobby        text,
-    friendsEmail text
+    friendsemail text[]
 );

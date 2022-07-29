@@ -14,7 +14,7 @@ import java.io.IOException
 import java.net.InetSocketAddress
 
 
-object Main {
+object Test {
   @throws[Exception]
   def main(args: Array[String]): Unit = {
     val server = HttpServer.create(new InetSocketAddress(8000), 0)
