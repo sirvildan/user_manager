@@ -1,3 +1,3 @@
 package ru.sirv.domain //git test
 
-final case class UserMeta(hobby: String, friendsEmail: Seq[String])
+final case class UserMeta(email: String, hobby: String, friendsemail: String)

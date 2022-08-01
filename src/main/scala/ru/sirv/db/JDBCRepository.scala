@@ -8,15 +8,14 @@ import scala.concurrent.Future
 
 
 class JDBCRepository (connection: Connection) extends DbRepository {
-  def insertUser(user: User): Future[Unit] = {
+  def insertUser(user: User): Future[Unit] = Future {
     val sql =
       s"""
-         |insert into "User" (email, name, age) values ('${user.email}', '${user.name}', ${user.age})
-         |""".stripMargin
+         |insert into "User" (email, name, age) values ('${user.email}', '${user.name}', ${user.age.getOrElse(0)})
+         |""".stripMargin // FIXME getOrElse for age
          val statement = connection.createStatement()
-    val isSuccess = statement.execute(sql)
-    if (isSuccess) Future(println("User inserted"))
-    else Future.failed(new RuntimeException("User not inserted"))
+    statement.execute(sql)
+    println("User inserted")
   }
 
   def selectUser(email: String): Future[Option[User]] = Future {
@@ -43,31 +42,75 @@ class JDBCRepository (connection: Connection) extends DbRepository {
     val updatesql =
       s"""
         |UPDATE "User"
-        |SET email = '${user.email}', name = '${user.name}', age = ${user.age}
-        |WHERE email = ${user.email};
-        |""".stripMargin
+        |SET email = '${user.email}', name = '${user.name}', age = ${user.age.getOrElse(0)}
+        |WHERE email = '${user.email}'
+        |""".stripMargin // FIXME option age
         val statement = connection.createStatement()
     val isSuccess = statement.executeUpdate(updatesql)
     if (isSuccess==0) Future.failed(new RuntimeException("Update failed"))
     else Future(println("Updated successfully"))
   }
 
-  def deleteUser(email: String): Future[Unit] = {
+  def deleteUser(email: String): Future[Unit] = Future{
     val deletesql =
       s"""
-         |delete from "User" where email=${email}
+         |delete from "User" where email='${email}'
          |""".stripMargin
          val statement = connection.createStatement()
-    val isSuccess = statement.executeUpdate(deletesql)
-    if (isSuccess!=0) Future(println("Deleted successfully"))
+    val deletedRows = statement.executeUpdate(deletesql)
+    if (deletedRows > 0) Future.successful(println("Deleted successfully"))
     else Future.failed(new RuntimeException("Delete failed"))
   }
 
-  def insertUserMeta(user: UserMeta): Future[Unit] = ???
+  def insertUserMeta(userMeta: UserMeta): Future[Unit] = Future{
+    val sql =
+      s"""
+         |insert into UserMeta (email, hobby, friendsemail) values ('${userMeta.email}', '${userMeta.hobby}', '${userMeta.friendsemail}')
+         |""".stripMargin // FIXME getOrElse for age
+    val statement = connection.createStatement()
+    statement.execute(sql)
+    println("Usermeta inserted")
+  }
 
-  def selectUserMeta(email: String): Future[Option[UserMeta]]= ???
+  def selectUserMeta(email: String): Future[Option[UserMeta]] = Future {
+    val selectsql =
+      s"""
+         |select * from UserMeta where email='${email}'
+         |""".stripMargin
+    val statement = connection.createStatement()
+    val resultSet: ResultSet = statement.executeQuery(selectsql)
+    val builder = List.newBuilder[UserMeta]
+    while (resultSet.next()) {
+      val email = resultSet.getString("email")
+      val hobby = resultSet.getString("hobby")
+      val friendsemail = resultSet.getString("friendsemail")
+      val userMeta = UserMeta(email, hobby, friendsemail)
+      builder.addOne(userMeta)
+    }
+    val usersMeta = builder.result()
+    usersMeta.headOption
+  }
+  def updateUserMeta(userMeta: UserMeta): Future[Unit] = Future{
+    val updatesql =
+      s"""
+         |UPDATE UserMeta
+         |SET email = '${userMeta.email}', hobby = '${userMeta.hobby}', friendsemail = '${userMeta.friendsemail}'
+         |WHERE email = '${userMeta.email}'
+         |""".stripMargin // FIXME option age
+    val statement = connection.createStatement()
+    val isSuccess = statement.executeUpdate(updatesql)
+    if (isSuccess==0) Future.failed(new RuntimeException("Update meta failed"))
+    else Future(println("Meta updated successfully"))
+  }
 
-  def updateUserMeta(user: UserMeta): Future[Unit] = ???
-
-  def deleteUserMeta(email: String): Future[Unit] = ???
+  def deleteUserMeta(email: String): Future[Unit] = {
+    val deletesql =
+      s"""
+         |delete from UserMeta where email='${email}'
+         |""".stripMargin
+    val statement = connection.createStatement()
+    val isSuccess = statement.executeUpdate(deletesql)
+    if (isSuccess!=0) Future(println("Meta deleted successfully"))
+    else Future.failed(new RuntimeException("Meta delete failed"))
+  }
 }
