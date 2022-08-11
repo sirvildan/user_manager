@@ -1,18 +1,9 @@
 package ru.sirv
 
-/*package ru.sirv
-
-object Main {
-  def main(args: Array[String]): Unit = {
-    println("Hello world!")
-  }
-} */
-
 import com.sun.net.httpserver.{HttpExchange, HttpHandler, HttpServer}
 
 import java.io.IOException
 import java.net.InetSocketAddress
-
 
 object Test {
   @throws[Exception]

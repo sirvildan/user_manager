@@ -7,13 +7,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-class JDBCRepository (connection: Connection) extends DbRepository {
+class JDBCRepository(connection: Connection) extends DbRepository {
   def insertUser(user: User): Future[Unit] = Future {
     val sql =
       s"""
          |insert into "User" (email, name, age) values ('${user.email}', '${user.name}', ${user.age.getOrElse(0)})
          |""".stripMargin // FIXME getOrElse for age
-         val statement = connection.createStatement()
+    val statement = connection.createStatement()
     statement.execute(sql)
     println("User inserted")
   }
@@ -23,7 +23,7 @@ class JDBCRepository (connection: Connection) extends DbRepository {
       s"""
          |select * from "User" where email='${email}'
          |""".stripMargin
-         val statement = connection.createStatement()
+    val statement = connection.createStatement()
     val resultSet: ResultSet = statement.executeQuery(selectsql)
     val builder = List.newBuilder[User]
     while (resultSet.next()) {
@@ -41,28 +41,28 @@ class JDBCRepository (connection: Connection) extends DbRepository {
   def updateUser(user: User): Future[Unit] = {
     val updatesql =
       s"""
-        |UPDATE "User"
-        |SET email = '${user.email}', name = '${user.name}', age = ${user.age.getOrElse(0)}
-        |WHERE email = '${user.email}'
-        |""".stripMargin // FIXME option age
-        val statement = connection.createStatement()
+         |UPDATE "User"
+         |SET email = '${user.email}', name = '${user.name}', age = ${user.age.getOrElse(0)}
+         |WHERE email = '${user.email}'
+         |""".stripMargin // FIXME option age
+    val statement = connection.createStatement()
     val isSuccess = statement.executeUpdate(updatesql)
-    if (isSuccess==0) Future.failed(new RuntimeException("Update failed"))
+    if (isSuccess == 0) Future.failed(new RuntimeException("Update failed"))
     else Future(println("Updated successfully"))
   }
 
-  def deleteUser(email: String): Future[Unit] = Future{
+  def deleteUser(email: String): Future[Unit] = Future {
     val deletesql =
       s"""
          |delete from "User" where email='${email}'
          |""".stripMargin
-         val statement = connection.createStatement()
+    val statement = connection.createStatement()
     val deletedRows = statement.executeUpdate(deletesql)
     if (deletedRows > 0) Future.successful(println("Deleted successfully"))
     else Future.failed(new RuntimeException("Delete failed"))
   }
 
-  def insertUserMeta(userMeta: UserMeta): Future[Unit] = Future{
+  def insertUserMeta(userMeta: UserMeta): Future[Unit] = Future {
     val sql =
       s"""
          |insert into UserMeta (email, hobby, friendsemail) values ('${userMeta.email}', '${userMeta.hobby}', '${userMeta.friendsemail}')
@@ -83,14 +83,15 @@ class JDBCRepository (connection: Connection) extends DbRepository {
     while (resultSet.next()) {
       val email = resultSet.getString("email")
       val hobby = resultSet.getString("hobby")
-      val friendsemail = resultSet.getString("friendsemail")
+      val friendsemail = resultSet.getString("friendsemail")           //////////////////////////Seq
       val userMeta = UserMeta(email, hobby, friendsemail)
       builder.addOne(userMeta)
     }
     val usersMeta = builder.result()
     usersMeta.headOption
   }
-  def updateUserMeta(userMeta: UserMeta): Future[Unit] = Future{
+
+  def updateUserMeta(userMeta: UserMeta): Future[Unit] = Future {
     val updatesql =
       s"""
          |UPDATE UserMeta
@@ -99,7 +100,7 @@ class JDBCRepository (connection: Connection) extends DbRepository {
          |""".stripMargin // FIXME option age
     val statement = connection.createStatement()
     val isSuccess = statement.executeUpdate(updatesql)
-    if (isSuccess==0) Future.failed(new RuntimeException("Update meta failed"))
+    if (isSuccess == 0) Future.failed(new RuntimeException("Update meta failed"))
     else Future(println("Meta updated successfully"))
   }
 
@@ -110,7 +111,31 @@ class JDBCRepository (connection: Connection) extends DbRepository {
          |""".stripMargin
     val statement = connection.createStatement()
     val isSuccess = statement.executeUpdate(deletesql)
-    if (isSuccess!=0) Future(println("Meta deleted successfully"))
+    if (isSuccess != 0) Future(println("Meta deleted successfully"))
     else Future.failed(new RuntimeException("Meta delete failed"))
+  }
+
+  def addFriendEmail(email: String, appendEmail: String): Future[Unit] = Future {         // FIXME MULTI VALUE ADDITION
+    val addEmail =
+      s"""
+        UPDATE UserMeta
+        SET friendsemail = array_append(friendsemail, '${appendEmail}') where email = '${email}'
+        """.stripMargin
+    val statement = connection.createStatement()
+    val updated = statement.executeUpdate(addEmail)
+    if (updated > 0) Future.successful(println("Added to array successfully"))
+    else Future.failed(new RuntimeException("Add to array failed"))
+  }
+
+  def deleteFriendEmail(email: String, removeEmail: String): Future[Unit] = Future {
+    val deleteEmail =
+      s"""
+        UPDATE UserMeta
+        set friendsemail = array_remove(friendsemail, '${removeEmail}') where email = '${email}'
+        """.stripMargin
+    val statement = connection.createStatement()
+    val updated = statement.executeUpdate(deleteEmail)
+    if (updated > 0) Future.successful(println("Deleted from array successfully"))
+    else Future.failed(new RuntimeException("Delete from array failed"))
   }
 }

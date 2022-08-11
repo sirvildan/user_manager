@@ -16,4 +16,6 @@ trait DbService {
   def readUserMeta(email: String): Future[Option[UserMeta]]
   def updateUserMeta(user: UserMeta): Future[Unit]
   def deleteUserMeta(email: String): Future[Unit]
+  def addEmailFriend(email: String): Future[Unit]
+  def deleteEmailFriend(email: String): Future[Unit]
 }

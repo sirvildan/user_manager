@@ -31,7 +31,8 @@ class JDBCUserTest extends AnyFunSuite with BeforeAndAfterAll {
     assert(connection.nonEmpty)
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
-    val email = random.nextDouble() + "@outlook.com"
+    //val email = random.nextDouble() + "@outlook.com"
+    val email = "testing1@mail"
     Await.result(dbRepository.insertUser(User(email, "nametest", 21)), 200.seconds)
     val result: Option[User] = Await.result(dbRepository.selectUser(email), 200.seconds)
     assert(result.nonEmpty && result.get.email == email)
@@ -74,8 +75,9 @@ class JDBCUserTest extends AnyFunSuite with BeforeAndAfterAll {
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
     //val email = random.nextDouble() + "@outlook.com"
-    val email = "smthone"
-    Await.result(dbRepository.insertUserMeta(UserMeta(email, "hobbynew", "{f1@mail.ru, f@mail.ru}")), 200.seconds)
+    val email = "testing@m"
+    //Await.result(dbRepository.insertUserMeta(UserMeta(email, "hobbynew", Seq("{f1@mail.ru}"))), 200.seconds)
+    Await.result(dbRepository.insertUserMeta(UserMeta(email, "hobbynew", "{f1@mail.ru, f2@mail.ru}")), 200.seconds)
     val result: Option[UserMeta] = Await.result(dbRepository.selectUserMeta(email), 200.seconds)
     assert(result.nonEmpty && result.get.email == email)
   }
@@ -85,6 +87,7 @@ class JDBCUserTest extends AnyFunSuite with BeforeAndAfterAll {
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
     val email = "smthone"
+    //Await.result(dbRepository.insertUserMeta(UserMeta(email, "hobbydeletetest", Seq("ff"))), 200.seconds)
     Await.result(dbRepository.insertUserMeta(UserMeta(email, "hobbydeletetest", "{ff}")), 200.seconds)
     val isSuccess = Await.result(
       dbRepository
@@ -99,7 +102,7 @@ class JDBCUserTest extends AnyFunSuite with BeforeAndAfterAll {
     assert(connection.nonEmpty)
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
-    Await.result(dbRepository.updateUserMeta(UserMeta("smthone","hobhupdtest","{ff}")),200.seconds)
+    Await.result(dbRepository.updateUserMeta(UserMeta("smthone","hobhupdtes", "{ff}")),200.seconds)
     val result: Option[UserMeta] = Await.result(dbRepository.selectUserMeta(email),200.seconds)
     assert(result.nonEmpty && result.get.email == email)
   }
@@ -108,6 +111,30 @@ class JDBCUserTest extends AnyFunSuite with BeforeAndAfterAll {
     assert(connection.nonEmpty)
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
+    val result: Option[UserMeta] = Await.result(dbRepository.selectUserMeta(email), 200.seconds)
+    assert(result.nonEmpty && result.get.email == email)
+  }
+
+  test("Value should be added into array friendsemail") {                   // FIXME MULTI VALUE ADDITION
+    assert(connection.nonEmpty)
+    val con = connection.get
+    val dbRepository = new JDBCRepository(con)
+    val email = "testing@m"
+    //Await.result(dbRepository.addFriendEmail(UserMeta(email, Seq("{f1@mail.ru}"))), 200.seconds)
+    //Await.result(dbRepository.insertUserMeta(UserMeta(email, "addarraytest", "ff")), 200.seconds)
+    Await.result(dbRepository.addFriendEmail(email, "someaddemail@kek.ru"), 200.seconds)
+    val result: Option[UserMeta] = Await.result(dbRepository.selectUserMeta(email), 200.seconds)
+    assert(result.nonEmpty && result.get.email == email)
+  }
+
+  test("Value should be deleted from array friendsemail") {
+    assert(connection.nonEmpty)
+    val con = connection.get
+    val dbRepository = new JDBCRepository(con)
+    val email = "testing@m"
+    //Await.result(dbRepository.addFriendEmail(UserMeta(email, Seq("{f1@mail.ru}"))), 200.seconds)
+    //Await.result(dbRepository.insertUserMeta(UserMeta(email, "addarraytest", "ff")), 200.seconds)
+    Await.result(dbRepository.deleteFriendEmail(email, "someaddemail@kek.ru"), 200.seconds)
     val result: Option[UserMeta] = Await.result(dbRepository.selectUserMeta(email), 200.seconds)
     assert(result.nonEmpty && result.get.email == email)
   }
