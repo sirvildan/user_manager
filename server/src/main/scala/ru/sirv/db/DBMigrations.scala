@@ -9,7 +9,6 @@ import ru.sirv.db.DbModule.JdbcDatabaseConfig
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object DBMigrations extends LazyLogging {
 

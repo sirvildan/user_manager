@@ -1,18 +1,21 @@
-import sbt.Keys.libraryDependencies
+import settings._
 
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "test"
-
-lazy val root = (project in file("."))
+lazy val server = (project in file("server"))
   .settings(
-    name := "user_manager",
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "test",
-    libraryDependencies += "org.postgresql" % "postgresql" % "42.4.0",
-      libraryDependencies += "org.flywaydb" % "flyway-core" % "8.4.0",
-    libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
-
+    name := "manager_server",
+    commonSettings2_13(),
+    libraryDependencies ++= Dependencies.lib.value,
+    compile / exportJars := true
   )
 
+lazy val root = (project in file("."))
+  .aggregate(server)
+  .dependsOn(server)
+  .settings(
+    Compile / run / fork      := true
+    //Compile / run / mainClass := Some("ru.sirv.Main")
+)

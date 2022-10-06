@@ -2,7 +2,7 @@ package ru.sirv.db
 
 import ru.sirv.db.DbModule.JdbcDatabaseConfig
 
-import java.sql.{Connection, DriverManager, Statement}
+import java.sql.{Connection, DriverManager}
 import scala.concurrent.Future
 
 class DbModule(config: JdbcDatabaseConfig) {

@@ -1,9 +1,11 @@
 package ru.sirv
 
-import com.sun.net.httpserver.{HttpExchange, HttpHandler, HttpServer}
-
 import java.io.IOException
 import java.net.InetSocketAddress
+import com.sun.net.httpserver.HttpExchange
+import com.sun.net.httpserver.HttpHandler
+import com.sun.net.httpserver.HttpServer
+
 
 object Test {
   @throws[Exception]
@@ -18,8 +20,8 @@ object Test {
   class MyHandler extends HttpHandler {
     @throws[IOException]
     override def handle(t: HttpExchange): Unit = {
-      val response = "This is the response. Testing"
-      t.sendResponseHeaders(200, response.length)
+      val response = "This is the response"
+      t.sendResponseHeaders(200, response.length())
       val os = t.getResponseBody
       os.write(response.getBytes)
       os.close()

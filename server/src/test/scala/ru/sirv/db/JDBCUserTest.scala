@@ -75,7 +75,7 @@ class JDBCUserTest extends AnyFunSuite with BeforeAndAfterAll {
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
     //val email = random.nextDouble() + "@outlook.com"
-    val email = "testing@m"
+    val email = "testing1@mail"
     //Await.result(dbRepository.insertUserMeta(UserMeta(email, "hobbynew", Seq("{f1@mail.ru}"))), 200.seconds)
     Await.result(dbRepository.insertUserMeta(UserMeta(email, "hobbynew", "{f1@mail.ru, f2@mail.ru}")), 200.seconds)
     val result: Option[UserMeta] = Await.result(dbRepository.selectUserMeta(email), 200.seconds)
