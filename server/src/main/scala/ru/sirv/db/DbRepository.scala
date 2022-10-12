@@ -1,7 +1,5 @@
 package ru.sirv.db
-
-import ru.sirv.domain.{User, UserMeta}
-
+import ru.sirv.domain._
 import scala.concurrent.Future
 
 trait DbRepository {

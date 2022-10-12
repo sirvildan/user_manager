@@ -1,11 +1,9 @@
 package ru.sirv.db
 
-import ru.sirv.domain.{User, UserMeta}
-
 import java.sql.{Connection, ResultSet}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
+import ru.sirv.domain._
 
 class JDBCRepository(connection: Connection) extends DbRepository {
   def insertUser(user: User): Future[Unit] = Future {
