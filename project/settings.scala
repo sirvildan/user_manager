@@ -31,16 +31,17 @@ object settings {
     "-language:experimental.macros", // Allow macro definition (besides implementation and application)
 
     // ********** Warning Settings ***********************************************
-    //"-Werror", // Fail the compilation if there are any warnings.
+    "-Werror", // Fail the compilation if there are any warnings.
     "-Wdead-code", //  Warn when dead code is identified.
     "-Wextra-implicit", // Warn when more than one implicit parameter section is defined.
-    // "-Wmacros:none", // Do not inspect expansions or their original trees when generating unused symbol warnings.
-    // "-Wmacros:before", // Only inspect unexpanded user-written code for unused symbols. (Default)
+     "-Wmacros:none", // Do not inspect expansions or their original trees when generating unused symbol warnings.
+     "-Wmacros:before", // Only inspect unexpanded user-written code for unused symbols. (Default)
     "-Wmacros:after", // Only inspect expanded trees when generating unused symbol warnings.
-    // "-Wmacros:both", // Inspect both user-written code and expanded trees when generating unused symbol warnings.
+     "-Wmacros:both", // Inspect both user-written code and expanded trees when generating unused symbol warnings.
     //"-Wnumeric-widen", // Warn when numerics are widened.
     "-Woctal-literal", // Warn on obsolete octal syntax.
-    // "-Wself-implicit", // Warn when an implicit resolves to an enclosing self-definition.
+     //"-Wself-implicit", // Warn when an implicit resolves to an enclosing self-definition.
+    "-Xlint:implicit-recursion", // FIX Wself-implicit
     "-Wunused:imports", //Warn if an import selector is not referenced.
     "-Wunused:patvars", // Warn if a variable bound in a pattern is unused.
     "-Wunused:privates", // Warn if a private member is unused.

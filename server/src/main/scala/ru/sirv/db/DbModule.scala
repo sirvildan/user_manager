@@ -8,17 +8,18 @@ import scala.concurrent.Future
 class DbModule(config: JdbcDatabaseConfig) {
   def migrate: Future[Boolean] = DBMigrations.migrate(config)
 
-  def setup: Future[DbService] = ???
+  //def setup: Future[DbService] = ???
 
-  def getConnection(): Connection = {
-    try {
+  //def getConnection(): Connection = {
+  def getConnection: Connection = {
+    //try {
       val con: Connection = DriverManager
         .getConnection("jdbc:postgresql://localhost:5432/sirvildan_db",
           "postgres",
           "internet")
 
       con
-    }
+    //}
   }
 }
 

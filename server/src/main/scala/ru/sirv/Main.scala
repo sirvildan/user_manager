@@ -1,30 +1,27 @@
 package ru.sirv
 
-import java.io.IOException
-import java.net.InetSocketAddress
-import com.sun.net.httpserver.HttpExchange
-import com.sun.net.httpserver.HttpHandler
-import com.sun.net.httpserver.HttpServer
+import cats.effect.{ExitCode, IO, IOApp, Resource}
+import com.comcast.ip4s._
+import com.typesafe.scalalogging.Logger
+import org.http4s.ember.server._
+import org.http4s.server.Server
+import ru.sirv.http.HttpModule
+import ru.sirv.service.UserService
 
+object Main extends IOApp {
+  implicit val logger = Logger("Main")
 
-object Test {
-  @throws[Exception]
-  def main(args: Array[String]): Unit = {
-    val server = HttpServer.create(new InetSocketAddress(8000), 0)
-    server.createContext("/test", new Test.MyHandler)
-    server.setExecutor(null) // creates a default executor
+  def run(args: List[String]): IO[ExitCode] = {
+    val userService = new UserService()
+    val httpModule = HttpModule(userService)
 
-    server.start()
-  }
+    val server: Resource[IO, Server] = EmberServerBuilder
+      .default[IO]
+      .withHost(ipv4"0.0.0.0")
+      .withPort(port"8080")
+      .withHttpApp(httpModule.httpApp)
+      .build
 
-  class MyHandler extends HttpHandler {
-    @throws[IOException]
-    override def handle(t: HttpExchange): Unit = {
-      val response = "This is the response"
-      t.sendResponseHeaders(200, response.length())
-      val os = t.getResponseBody
-      os.write(response.getBytes)
-      os.close()
-    }
+    server.useForever.as(ExitCode.Success)
   }
 }

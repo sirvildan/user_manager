@@ -46,7 +46,7 @@ object DBMigrations extends LazyLogging {
   }
 
   private def logValidationErrorsIfAny(m: FluentConfiguration): Unit = {
-    val validated = m.ignorePendingMigrations(true)
+    val validated = m.ignoreMigrationPatterns("*:pending")
       .load()
       .validateWithResult()
 
