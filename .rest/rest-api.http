@@ -1,0 +1,36 @@
+GET http://localhost:8080/api/users
+Accept: application/json
+
+###
+
+POST http://localhost:8080/api/users
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "mail333@k",
+  "name": "Name333",
+  "age": 121
+}
+
+###
+
+PUT http://localhost:8080/api/users/a075b15f-d34c-4c3a-8aeb-23b294af6f3b
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "srgk",
+  "name": "Nassdde333",
+  "age": 187
+}
+
+###
+
+DELETE http://localhost:8080/api/users/a075b15f-d34c-4c3a-8aeb-23b294af6f3b
+Accept: application/json
+
+###
+
+GET http://localhost:8080/api/users/a075b15f-d34c-4c3a-8aeb-23b294af6f3b
+Accept: application/json
