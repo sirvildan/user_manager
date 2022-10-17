@@ -32,8 +32,17 @@ object Dependencies {
     "io.circe" %% "circe-parser" % circeVersion
   )
 
+  val doobie = Seq(
+    "org.tpolecat" %% "doobie-core"      % doobieVersion,
+    "org.tpolecat" %% "doobie-h2"        % doobieVersion,          // H2 driver 1.4.200 + type mappings.
+    "org.tpolecat" %% "doobie-hikari"    % doobieVersion,          // HikariCP transactor.
+    "org.tpolecat" %% "doobie-postgres"  % doobieVersion,          // Postgres driver 42.3.1 + type mappings.
+    "org.tpolecat" %% "doobie-specs2"    % doobieVersion % "test", // Specs2 support for typechecking statements.
+    "org.tpolecat" %% "doobie-scalatest" % doobieVersion % "test"
+  )
+
   val lib = Def.setting(
-    test ++ database ++ logging ++ lihaoyi ++ http4s ++ circe
+    test ++ database ++ logging ++ lihaoyi ++ http4s ++ circe ++ doobie
   )
 }
 
@@ -47,4 +56,5 @@ object Versions {
   val logbackVersion = "1.2.3"
   val http4sVersion = "0.23.12"
   val circeVersion = "0.14.1"
+  val doobieVersion = "1.0.0-RC1"
 }

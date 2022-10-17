@@ -34,3 +34,43 @@ Accept: application/json
 
 GET http://localhost:8080/api/users/a075b15f-d34c-4c3a-8aeb-23b294af6f3b
 Accept: application/json
+
+###
+
+GET http://localhost:8080/api/usermeta
+Accept: application/json
+
+###
+
+GET http://localhost:8080/api/usermeta/a075b15f-d34c-4c3a-8aeb-23b294af6f3ab
+Accept: application/json
+
+###
+
+POST http://localhost:8080/api/usermeta
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "mail33@meta.ru",
+  "hobby": "metahob",
+  "friendsemail": "friend1@meta.ru, friend2@meta.ru"
+}
+
+###
+
+PUT http://localhost:8080/api/usermeta/a075b15f-d34c-4c3a-8aeb-23b294af6f3b
+Accept: application/json
+Content-Type: application/json
+
+{
+"email": "mail33@meta.ru",
+"hobby": "metahob",
+"friendsemail": "friend1@meta.ru, friend2@meta.ru"
+
+###
+
+DELETE http://localhost:8080/api/usermeta/a075b15f-d34c-4c3a-8aeb-23b294af6f3b
+Accept: application/json
+
+

@@ -28,6 +28,17 @@ class HttpService(service: UserService)(implicit logger: Logger){
       req.decodeJson[User].flatMap(user => service.updateUser(user, userId)) *> Ok()
     case DELETE -> Root / "users" / UUIDVar(userId) =>
       service.deleteUser(userId) *> Ok()
+
+    case GET -> Root / "usermeta" =>
+      service.getAllMeta.flatMap(Ok(_))
+    case GET -> Root / "usermeta" / UUIDVar(usermetaId) =>
+      service.getUserMeta(usermetaId).flatMap(Ok(_))
+    case req@POST -> Root / "usermeta" =>
+      req.decodeJson[UserMeta].flatMap(userMeta => service.addUserMeta(userMeta)) *> Created()
+    case req@PUT -> Root / "usermeta" / UUIDVar(usermetaId) =>
+      req.decodeJson[UserMeta].flatMap(userMeta => service.updateUserMeta(userMeta, usermetaId)) *> Ok()
+    case DELETE -> Root / "usermeta" / UUIDVar(usermetaId) =>
+      service.deleteUserMeta(usermetaId) *> Ok()
   }
   def services = userService <+> helloWorldService
   def httpApp = Router("/" -> helloWorldService, "/api" -> services).orNotFound
