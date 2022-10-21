@@ -4,11 +4,16 @@ import cats.effect.{IO, Resource}
 import com.zaxxer.hikari.HikariConfig
 import doobie.hikari.HikariTransactor
 import doobie.{ExecutionContexts, Transactor}
+import ru.sirv.db.DbModule.{ConnectionConfig, PoolConfig}
 
 import scala.concurrent.duration.FiniteDuration
 
 class DbModule {
-  def buildAccessor()
+  def buildService(db: ConnectionConfig, pool: PoolConfig, poolName: String): Resource[IO, DbService[IO]] =
+    DbModule.transactor(db, pool, poolName).flatMap{xa =>
+      val accessor = new DoobieAccessor
+      DbService.impl(xa, accessor)
+    }
 }
 object DbModule {
   final case class ConnectionConfig(

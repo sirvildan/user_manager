@@ -1,12 +1,9 @@
 package ru.sirv.db
 
 import cats.effect.{IO, Resource}
+import doobie.implicits._
 import doobie.util.transactor.Transactor
 import ru.sirv.domain._
-import cats.syntax.all._
-import doobie._
-import doobie.implicits._
-import doobie.postgres.implicits._
 
 trait DbService[F[_]] {
   def createUser(userinfo: Userinfo): F[Unit]
