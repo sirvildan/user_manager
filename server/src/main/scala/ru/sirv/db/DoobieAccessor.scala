@@ -18,7 +18,19 @@ class DoobieAccessor extends DbRepository[ConnectionIO] {
   }
 
 
-  override def selectUser(email: String): ConnectionIO[Option[Userinfo]] = ???
+  override def selectUser(email: String): ConnectionIO[Option[Userinfo]] = {
+    val query =
+      sql"""SELECT email,name,age
+           |FROM userinfo
+           |WHERE email = $email""".stripMargin
+
+    query
+      .query[(String,Option[String], Option[Int])]
+      .option.map {
+      case Some((e, Some(n), a)) => Userinfo(e, n, a).some
+      case _ => none
+    }
+  }
 
 
   override def updateUser(userinfo: Userinfo): doobie.ConnectionIO[Unit] = ???

@@ -46,8 +46,13 @@ object Dependencies {
     "io.estatico"  %% "newtype"         % NewTypeVersion
   )
 
+  val log4Cats = Seq(
+    "org.typelevel" %% "log4cats-slf4j" % "2.3.0",
+    "org.typelevel" %% "log4cats-noop"  % "2.3.0",
+  )
+
   val lib = Def.setting(
-    test ++ database ++ logging ++ lihaoyi ++ http4s ++ circe ++ doobie ++ pureconfig
+    test ++ database ++ logging ++ lihaoyi ++ http4s ++ circe ++ doobie ++ pureconfig ++ log4Cats
   )
 }
 

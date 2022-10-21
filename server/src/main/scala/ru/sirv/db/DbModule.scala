@@ -4,6 +4,7 @@ import cats.effect.{IO, Resource}
 import com.zaxxer.hikari.HikariConfig
 import doobie.hikari.HikariTransactor
 import doobie.{ExecutionContexts, Transactor}
+import org.typelevel.log4cats.Logger
 import ru.sirv.db.DbModule.{ConnectionConfig, PoolConfig}
 
 import scala.concurrent.duration.FiniteDuration
@@ -14,6 +15,9 @@ class DbModule {
       val accessor = new DoobieAccessor
       DbService.impl(xa, accessor)
     }
+
+  def migrate(db: ConnectionConfig, locations: Seq[String])(implicit log: Logger[IO]): IO[Unit] =
+    IO.whenA(locations.nonEmpty)(DBMigrations.migrate(db, locations.head, locations.tail:_*).void)
 }
 object DbModule {
   final case class ConnectionConfig(

@@ -28,7 +28,8 @@ object DbService {
         override def createUser(userinfo: Userinfo): IO[Unit] =
           accessor.insertUser(userinfo).transact(xa)
 
-        override def readUser(email: String): IO[Option[Userinfo]] = ???
+        override def readUser(email: String): IO[Option[Userinfo]] =
+          accessor.selectUser(email).transact(xa)
 
         override def updateUser(userinfo: Userinfo): IO[Unit] = ???
 
