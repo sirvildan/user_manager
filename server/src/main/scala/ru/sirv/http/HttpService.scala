@@ -23,9 +23,9 @@ class HttpService(service: UserService)(implicit logger: Logger){
     case GET -> Root / "users" / UUIDVar(userId) =>
       service.getUser(userId).flatMap(Ok(_))
     case req@POST -> Root / "users" =>
-      req.decodeJson[User].flatMap(user => service.addUser(user)) *> Created()
+      req.decodeJson[Userinfo].flatMap(userinfo => service.addUser(userinfo)) *> Created()
     case req@PUT -> Root / "users" / UUIDVar(userId) =>
-      req.decodeJson[User].flatMap(user => service.updateUser(user, userId)) *> Ok()
+      req.decodeJson[Userinfo].flatMap(userinfo => service.updateUser(userinfo, userId)) *> Ok()
     case DELETE -> Root / "users" / UUIDVar(userId) =>
       service.deleteUser(userId) *> Ok()
 

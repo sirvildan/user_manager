@@ -1,35 +1,59 @@
 package ru.sirv.db
 
-import ru.sirv.db.DbModule.JdbcDatabaseConfig
+import cats.effect.{IO, Resource}
+import com.zaxxer.hikari.HikariConfig
+import doobie.hikari.HikariTransactor
+import doobie.{ExecutionContexts, Transactor}
 
-import java.sql.{Connection, DriverManager}
-import scala.concurrent.Future
+import scala.concurrent.duration.FiniteDuration
 
-class DbModule(config: JdbcDatabaseConfig) {
-  def migrate: Future[Boolean] = DBMigrations.migrate(config)
-
-  //def setup: Future[DbService] = ???
-
-  //def getConnection(): Connection = {
-  def getConnection: Connection = {
-    //try {
-      val con: Connection = DriverManager
-        .getConnection("jdbc:postgresql://localhost:5432/sirvildan_db",
-          "postgres",
-          "internet")
-
-      con
-    //}
-  }
+class DbModule {
+  def buildAccessor()
 }
-
 object DbModule {
-  final case class JdbcDatabaseConfig(
-                                       url: String = "jdbc:postgresql://localhost/sirvildan_db",
-                                       driver: String = "com.mysql.cj.jdbc.Driver",
-                                       user: String = "postgres",
-                                       password: String = "internet",
-                                       migrationsTable: String = "flyway_table",
-                                       migrationsLocations: List[String] = List("classpath:migrations/postgres")
-                                     )
+  final case class ConnectionConfig(
+                                     jdbcDriverName: String,
+                                     jdbcUrl: String,
+                                     user: String,
+                                     password: String,
+                                   )
+
+  final case class PoolConfig(
+                               connectionMaxPoolSize: Int,
+                               connectionIdlePoolSize: Int,
+                               connectionTimeout: FiniteDuration,
+                               connectionIdleTimeout: Option[FiniteDuration],
+                               connectionMaxLifetime: Option[FiniteDuration],
+                               threadPoolSize: Int,
+                             )
+
+  def transactor(db: ConnectionConfig, pool: PoolConfig, poolName: String): Resource[IO, Transactor[IO]] =
+    ExecutionContexts.fixedThreadPool[IO](pool.threadPoolSize).flatMap { ec =>
+      HikariTransactor.fromHikariConfig[IO](hikariConfig(db, pool, poolName), ec)
+    }
+
+  def hikariConfig(db: ConnectionConfig, pool: PoolConfig, poolName: String): HikariConfig = {
+    val conf = new HikariConfig()
+
+    conf.setMaximumPoolSize(pool.connectionMaxPoolSize)
+    conf.setMinimumIdle(pool.connectionIdlePoolSize)
+    conf.setConnectionTimeout(pool.connectionTimeout.toMillis)
+
+    pool.connectionMaxLifetime.foreach { max =>
+      conf.setMaxLifetime(max.toMillis)
+    }
+    pool.connectionIdleTimeout.foreach { idle =>
+      conf.setIdleTimeout(idle.toMillis)
+    }
+
+    conf.setPoolName(poolName)
+
+    conf.setDriverClassName(db.jdbcDriverName)
+    conf.setJdbcUrl(db.jdbcUrl)
+    conf.setUsername(db.user)
+    conf.setPassword(db.password)
+
+    conf
+  }
+
 }

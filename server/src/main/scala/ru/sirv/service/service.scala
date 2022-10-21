@@ -8,26 +8,26 @@ import java.util.UUID
 
 class UserService{
   implicit val logger = Logger("UserService")
-  def getUser(userId: UUID): IO[User] = {
-    logger.info(s"Get user by id $userId")
-    IO.pure(User("ss@mal.ru", "mock", None))
+  def getUser(userId: UUID): IO[Userinfo] = {
+    logger.info(s"Get userinfo by id $userId")
+    IO.pure(Userinfo("ss@mal.ru", "mock", None))
   }
-  def getAllUsers: IO[Seq[User]] = {
+  def getAllUsers: IO[Seq[Userinfo]] = {
     logger.info("Get all users")
-    Seq(User("mail1@k","Name1",12), User("mail2@k","Name2",14)).pure[IO]
+    Seq(Userinfo("mail1@k","Name1",12), Userinfo("mail2@k","Name2",14)).pure[IO]
     //Seq(UserMeta("metamail@met", "hobbytest", "mail1,mail2")).pure[IO]
   }
 
-  def deleteUser(userId: UUID): IO[User] = {
-    logger.info(s"Delete user by $userId")
-    IO.pure(User("ss@mal.ru", "mock", None))
+  def deleteUser(userId: UUID): IO[Userinfo] = {
+    logger.info(s"Delete userinfo by $userId")
+    IO.pure(Userinfo("ss@mal.ru", "mock", None))
   }
-  def addUser(User: User): IO[UUID] = {
-    logger.info(s"Add user $User")
+  def addUser(Userinfo: Userinfo): IO[UUID] = {
+    logger.info(s"Add userinfo $Userinfo")
     IO.pure(UUID.randomUUID())
   }
-  def updateUser(User: User, userId: UUID): IO[Unit] = {
-    logger.info(s"Update user $User id=$userId")
+  def updateUser(Userinfo: Userinfo, userId: UUID): IO[Unit] = {
+    logger.info(s"Update userinfo $Userinfo id=$userId")
     IO.unit
   }
 
@@ -37,20 +37,20 @@ class UserService{
   }
 
   def getUserMeta(usermetaId: UUID): IO[UserMeta] = {
-    logger.info(s"Get user by id $usermetaId")
+    logger.info(s"Get userinfo by id $usermetaId")
     IO.pure(UserMeta("meta@mail", "fishing", "mail1, mail2"))
   }
 
   def deleteUserMeta(usermetaId: UUID): IO[UserMeta] = {
-    logger.info(s"Delete user by $usermetaId")
+    logger.info(s"Delete userinfo by $usermetaId")
     IO.pure(UserMeta("meta@mail", "fishing", "mail1, mail2"))
   }
   def addUserMeta(UserMeta: UserMeta): IO[UUID] = {
-    logger.info(s"Add user $UserMeta")
+    logger.info(s"Add userinfo $UserMeta")
     IO.pure(UUID.randomUUID())
   }
   def updateUserMeta(UserMeta: UserMeta, usermetaId: UUID): IO[Unit] = {
-    logger.info(s"Update user $UserMeta id=$usermetaId")
+    logger.info(s"Update userinfo $UserMeta id=$usermetaId")
     IO.unit
   }
 }

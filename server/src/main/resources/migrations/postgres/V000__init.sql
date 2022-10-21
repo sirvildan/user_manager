@@ -1,4 +1,4 @@
-create table if not exists "User"
+create table if not exists "Userinfo"
 (
     id    serial
         primary key,
@@ -14,7 +14,7 @@ create table if not exists usermeta
         primary key,
     email        varchar(128) not null
         unique
-        references "User" (email)
+        references "Userinfo" (email)
             on delete cascade,
     hobby        text,
     friendsemail text[]

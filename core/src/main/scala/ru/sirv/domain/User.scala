@@ -6,23 +6,23 @@ import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 import org.http4s.{EntityDecoder, EntityEncoder}
 
-final case class User(email: String, name: String, age: Option[Int])
+final case class Userinfo(email: String, name: String, age: Option[Int])
 
-object User {
-  def apply(email: String, name: String, age: Option[Int]): User = new User(email, name, age)
+object Userinfo {
+  def apply(email: String, name: String, age: Option[Int]): Userinfo = new Userinfo(email, name, age)
 
-  def apply(email: String, name: String, age: Int): User = new User(email, name, Option(age))
+  def apply(email: String, name: String, age: Int): Userinfo = new Userinfo(email, name, Option(age))
 
-  def apply(email: String, name: String): User = new User(email, name, Option.empty[Int])
+  def apply(email: String, name: String): Userinfo = new Userinfo(email, name, Option.empty[Int])
 
   //def isEmailValid(email:String): Boolean = email contains "@"
   def isEmailValid(email: String): Boolean = email.contains("@")
 
-  implicit val userCEncoder: Encoder[User] = deriveEncoder[User]
+  implicit val userCEncoder: Encoder[Userinfo] = deriveEncoder[Userinfo]
 
-  implicit val userCDecoder: Decoder[User] = deriveDecoder[User]
+  implicit val userCDecoder: Decoder[Userinfo] = deriveDecoder[Userinfo]
 
-  implicit def userEncoder: EntityEncoder[IO, User] = jsonEncoderOf[IO, User]
+  implicit def userEncoder: EntityEncoder[IO, Userinfo] = jsonEncoderOf[IO, Userinfo]
 
-  implicit def usersDecoder: EntityDecoder[IO, User] = jsonOf[IO, User]
+  implicit def usersDecoder: EntityDecoder[IO, Userinfo] = jsonOf[IO, Userinfo]
 }

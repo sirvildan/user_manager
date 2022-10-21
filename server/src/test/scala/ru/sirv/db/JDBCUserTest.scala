@@ -3,7 +3,7 @@ package ru.sirv.db
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 import ru.sirv.db.DbModule.JdbcDatabaseConfig
-import ru.sirv.domain.{User, UserMeta}
+import ru.sirv.domain.{Userinfo, UserMeta}
 
 import java.sql.Connection
 import scala.concurrent.{Await, Future}
@@ -27,23 +27,23 @@ class JDBCUserTest extends AnyFunSuite with BeforeAndAfterAll {
     val migrateResultIsSuccess: Boolean = Await.result(dbModule.migrate, 2.seconds)
     assert(migrateResultIsSuccess)
   }
-  test("User should be inserted") {
+  test("Userinfo should be inserted") {
     assert(connection.nonEmpty)
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
     //val email = random.nextDouble() + "@outlook.com"
     val email = "testing1@mail"
-    Await.result(dbRepository.insertUser(User(email, "nametest", 21)), 200.seconds)
-    val result: Option[User] = Await.result(dbRepository.selectUser(email), 200.seconds)
+    Await.result(dbRepository.insertUser(Userinfo(email, "nametest", 21)), 200.seconds)
+    val result: Option[Userinfo] = Await.result(dbRepository.selectUser(email), 200.seconds)
     assert(result.nonEmpty && result.get.email == email)
   }
 
-  test("User should be deleted") {
+  test("Userinfo should be deleted") {
     assert(connection.nonEmpty)
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
     val email = "smththree@mail.com"
-    Await.result(dbRepository.insertUser(User(email, "nametest", 21)), 200.seconds)
+    Await.result(dbRepository.insertUser(Userinfo(email, "nametest", 21)), 200.seconds)
     val isSuccess = Await.result(
       dbRepository
         .deleteUser(email)
@@ -53,20 +53,20 @@ class JDBCUserTest extends AnyFunSuite with BeforeAndAfterAll {
     assert(isSuccess)
   }
 
-  test("User should be selected") {
+  test("Userinfo should be selected") {
     assert(connection.nonEmpty)
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
-    val result: Option[User] = Await.result(dbRepository.selectUser(email), 200.seconds)
+    val result: Option[Userinfo] = Await.result(dbRepository.selectUser(email), 200.seconds)
     assert(result.nonEmpty && result.get.email == email)
   }
 
-  test("User should be updated") {
+  test("Userinfo should be updated") {
     assert(connection.nonEmpty)
     val con = connection.get
     val dbRepository = new JDBCRepository(con)
-    Await.result(dbRepository.updateUser(User(email,"name",22)),200.seconds)
-    val result: Option[User] = Await.result(dbRepository.selectUser(email),200.seconds)
+    Await.result(dbRepository.updateUser(Userinfo(email,"name",22)),200.seconds)
+    val result: Option[Userinfo] = Await.result(dbRepository.selectUser(email),200.seconds)
     assert(result.nonEmpty && result.get.email == email)
   }
 

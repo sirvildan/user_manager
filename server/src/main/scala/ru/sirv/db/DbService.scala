@@ -1,19 +1,53 @@
 package ru.sirv.db
-import ru.sirv.domain._
-import scala.concurrent.Future
 
-trait DbService {
-  def createUser(user: User): Future[Unit]
-  def readUser(email: String): Future[Option[User]]
-  def updateUser(user: User): Future[Unit]
-  def deleteUser(email: String): Future[Unit]
+import cats.effect.{IO, Resource}
+import doobie.util.transactor.Transactor
+import ru.sirv.domain._
+import cats.syntax.all._
+import doobie._
+import doobie.implicits._
+import doobie.postgres.implicits._
+
+trait DbService[F[_]] {
+  def createUser(userinfo: Userinfo): F[Unit]
+  def readUser(email: String): F[Option[Userinfo]]
+  def updateUser(userinfo: Userinfo): F[Unit]
+  def deleteUser(email: String): F[Unit]
 
 //------------------------------------------------------
 
-  def createUserMeta(user: UserMeta): Future[Unit]
-  def readUserMeta(email: String): Future[Option[UserMeta]]
-  def updateUserMeta(user: UserMeta): Future[Unit]
-  def deleteUserMeta(email: String): Future[Unit]
-  def addEmailFriend(email: String): Future[Unit]
-  def deleteEmailFriend(email: String): Future[Unit]
+  def createUserMeta(userinfo: UserMeta): F[Unit]
+  def readUserMeta(email: String): F[Option[UserMeta]]
+  def updateUserMeta(userinfo: UserMeta): F[Unit]
+  def deleteUserMeta(email: String): F[Unit]
+  def addEmailFriend(email: String): F[Unit]
+  def deleteEmailFriend(email: String): F[Unit]
+}
+
+object DbService {
+  def impl(xa: Transactor[IO], accessor: DoobieAccessor): Resource[IO, DbService[IO]] =
+    Resource.pure{
+      new DbService[IO] {
+        override def createUser(userinfo: Userinfo): IO[Unit] =
+          accessor.insertUser(userinfo).transact(xa)
+
+        override def readUser(email: String): IO[Option[Userinfo]] = ???
+
+        override def updateUser(userinfo: Userinfo): IO[Unit] = ???
+
+        override def deleteUser(email: String): IO[Unit] = ???
+
+        override def createUserMeta(userinfo: UserMeta): IO[Unit] = ???
+
+        override def readUserMeta(email: String): IO[Option[UserMeta]] = ???
+
+        override def updateUserMeta(userinfo: UserMeta): IO[Unit] = ???
+
+        override def deleteUserMeta(email: String): IO[Unit] = ???
+
+        override def addEmailFriend(email: String): IO[Unit] = ???
+
+        override def deleteEmailFriend(email: String): IO[Unit] = ???
+      }
+    }
 }

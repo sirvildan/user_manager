@@ -1,17 +1,16 @@
 package ru.sirv.db
 import ru.sirv.domain._
-import scala.concurrent.Future
 
-trait DbRepository {
-  def insertUser(user: User): Future[Unit]
-  def selectUser(email: String): Future[Option[User]]
-  def updateUser(user: User): Future[Unit]
-  def deleteUser(email: String): Future[Unit]
+trait DbRepository[F[_]] {
+  def insertUser(userinfo: Userinfo): F[Unit]
+  def selectUser(email: String): F[Option[Userinfo]]
+  def updateUser(userinfo: Userinfo): F[Unit]
+  def deleteUser(email: String): F[Unit]
 
 //  -----------------------------------------------------------
 
-  def insertUserMeta(user: UserMeta): Future[Unit]
-  def selectUserMeta(email: String): Future[Option[UserMeta]]
-  def updateUserMeta(user: UserMeta): Future[Unit]
-  def deleteUserMeta(email: String): Future[Unit]
+  def insertUserMeta(userinfo: UserMeta): F[Unit]
+  def selectUserMeta(email: String): F[Option[UserMeta]]
+  def updateUserMeta(userinfo: UserMeta): F[Unit]
+  def deleteUserMeta(email: String): F[Unit]
 }

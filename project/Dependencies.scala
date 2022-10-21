@@ -9,6 +9,10 @@ object Dependencies {
     "org.postgresql" % "postgresql" % postgresqlVersion,
     "org.flywaydb" % "flyway-core" % flywayVersion
   )
+
+  val pureconfig = Seq(
+    "com.github.pureconfig" %% "pureconfig"            % "0.17.1"
+  )
   val logging = Seq(
     "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
   "ch.qos.logback" % "logback-core" % logbackVersion,
@@ -38,11 +42,12 @@ object Dependencies {
     "org.tpolecat" %% "doobie-hikari"    % doobieVersion,          // HikariCP transactor.
     "org.tpolecat" %% "doobie-postgres"  % doobieVersion,          // Postgres driver 42.3.1 + type mappings.
     "org.tpolecat" %% "doobie-specs2"    % doobieVersion % "test", // Specs2 support for typechecking statements.
-    "org.tpolecat" %% "doobie-scalatest" % doobieVersion % "test"
+    "org.tpolecat" %% "doobie-scalatest" % doobieVersion % "test",
+    "io.estatico"  %% "newtype"         % NewTypeVersion
   )
 
   val lib = Def.setting(
-    test ++ database ++ logging ++ lihaoyi ++ http4s ++ circe ++ doobie
+    test ++ database ++ logging ++ lihaoyi ++ http4s ++ circe ++ doobie ++ pureconfig
   )
 }
 
@@ -57,4 +62,5 @@ object Versions {
   val http4sVersion = "0.23.12"
   val circeVersion = "0.14.1"
   val doobieVersion = "1.0.0-RC1"
+  val NewTypeVersion = "0.4.4"
 }

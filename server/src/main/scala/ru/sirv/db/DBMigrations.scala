@@ -1,65 +1,70 @@
 package ru.sirv.db
 
-import com.typesafe.scalalogging.LazyLogging
-import org.flywaydb.core.api.configuration.FluentConfiguration
-import org.flywaydb.core.api.Location
+import cats.effect.IO
+import cats.syntax.all._
 import org.flywaydb.core.Flyway
-import ru.sirv.db.DbModule.JdbcDatabaseConfig
+import org.flywaydb.core.api.exception.FlywayValidateException
+import org.flywaydb.core.api.output.{MigrateErrorResult, MigrateResult}
+import org.typelevel.log4cats.Logger
+import ru.sirv.db.DbModule.ConnectionConfig
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 
-object DBMigrations extends LazyLogging {
+object DBMigrations {
 
-  def migrate(config: JdbcDatabaseConfig): Future[Boolean] =
-    Future {
-      logger.info(
-        "Running migrations from locations: " +
-          config.migrationsLocations.mkString(", ")
-      )
-      val isSuccess: Boolean = unsafeMigrate(config)
-      logger.info(s"Executed $isSuccess migrations")
-      isSuccess
-    }
+  def migrate(config: ConnectionConfig, fstLocation: String, rstLocations: String*)(
+    implicit log: Logger[IO]
+  ): IO[MigrateResult] = {
+    val locations = fstLocation +: rstLocations
+    log.info(s"Running migrations from locations: [${locations.mkString(", ")}]") *>
+      loadFlyway(config, locations)
+        .map(_.migrate())
+        .flatTap {
+          case e: MigrateErrorResult =>
+            log.error(
+              s"Migration failure after ${e.migrationsExecuted} executed migrations," +
+                s" reason: [${e.error.message}] ${e.error.message}."
+            )
+          case r =>
+            log.info(s"Migration success after ${r.migrationsExecuted} executed migrations.")
+        }
+  }
 
-  private def unsafeMigrate(config: JdbcDatabaseConfig): Boolean = {
-    val m: FluentConfiguration = Flyway.configure
+  def validate(config: ConnectionConfig, fstLocation: String, rstLocations: String*)(
+    implicit log: Logger[IO]
+  ): IO[Unit] = {
+    val locations = fstLocation +: rstLocations
+    loadFlyway(config, locations)
+      .map(_.validateWithResult())
+      .flatMap { result =>
+        if (result.validationSuccessful) IO.unit
+        else {
+          result.invalidMigrations.asScala.toList.traverse_ { error =>
+            log.warn(
+              s"Migration validation failed for '${error.version}@${error.filepath}':" +
+                s" [${error.errorDetails.errorCode}] ${error.errorDetails.errorMessage}"
+            )
+          } *> IO.raiseError {
+            new FlywayValidateException(
+              result.errorDetails,
+              result.getAllErrorMessages
+            )
+          }
+        }
+      }
+  }
+
+  def loadFlyway(config: ConnectionConfig, locations: Seq[String]): IO[Flyway] = IO.blocking {
+    Flyway.configure
       .dataSource(
-        config.url,
+        config.jdbcUrl,
         config.user,
         config.password
       )
-      .group(true)
-      .outOfOrder(false)
-      .table(config.migrationsTable)
-      .locations(
-        config.migrationsLocations
-          .map(new Location(_))
-          .toList: _*
-      )
       .baselineOnMigrate(true)
-
-    logValidationErrorsIfAny(m)
-    val migrateResult = m.load().migrate()
-    migrateResult.success
-  }
-
-  private def logValidationErrorsIfAny(m: FluentConfiguration): Unit = {
-    val validated = m.ignoreMigrationPatterns("*:pending")
+      .baselineVersion("000")
+      .locations(locations: _*)
+      .mixed(true)
       .load()
-      .validateWithResult()
-
-    if (!validated.validationSuccessful)
-      for (error <- validated.invalidMigrations.asScala)
-        logger.warn(
-          s"""
-             |Failed validation:
-             |  - version: ${error.version}
-             |  - path: ${error.filepath}
-             |  - description: ${error.description}
-             |  - errorCode: ${error.errorDetails.errorCode}
-             |  - errorMessage: ${error.errorDetails.errorMessage}
-        """.stripMargin)
   }
 }
