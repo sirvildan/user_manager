@@ -7,8 +7,8 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j._
-import ru.sirv.db.DbModule.{ConnectionConfig, PoolConfig}
-import ru.sirv.domain.Userinfo
+import ru.sirv.db.DbModule._
+import ru.sirv.domain.{UserMeta, Userinfo}
 
 import java.util.UUID
 import scala.concurrent.duration._
@@ -28,13 +28,116 @@ class DoobieTest extends AnyFunSuite with BeforeAndAfterAll {
   }
 
   test("Userinfo should be inserted") {
-    val email = UUID.randomUUID().toString + "testing1@mail"
+    val email = UUID.randomUUID().toString + "||| INSERTINFO"
     val user = Userinfo(email, "nametest", 21)
-
     val result = dbService.use{service =>
       service.createUser(user) *> service.readUser(user.email)
     }.unsafeRunSync()
-
     assert(result.nonEmpty && result.get.email == email)
+  }
+
+//  test("Userinfo should be selected") {
+//    val email = UUID.randomUUID().toString + "testing1@mail"
+//    val user = Userinfo(email, "nametest", 21)
+//    val result = dbService.use{service =>
+//      service.createUser(user) *> service.readUser(user.email)
+//    }.unsafeRunSync()
+//    assert(result.nonEmpty && result.get.email == email)
+//  }
+
+  test("Userinfo should be updated") {
+    val rand = new scala.util.Random
+    val email = UUID.randomUUID().toString + "||| UPDATEINFO"
+    val new_name = "UPDATEDNAME"
+    val new_age = rand.between(0,100)
+    val user = Userinfo(email, "newnametest", 31)
+    val newuser = Userinfo(email, new_name, new_age)
+    val result = dbService.use{service =>
+      service.createUser(user) *>
+       service.updateUser(newuser) *>
+        service.readUser(newuser.email)
+    }.unsafeRunSync()
+    assert(result.get.email == email && result.get.name == new_name)
+  }
+
+  test("Userinfo should be deleted") {
+    val email = UUID.randomUUID().toString + "||| DELETEINFO"
+    val user = Userinfo(email, "new", 1)
+    val result = dbService.use{service =>
+      service.createUser(user) *>
+        service.deleteUser(user.email) *>
+          service.readUser(user.email)
+    }.unsafeRunSync()
+    assert(result.isEmpty)
+  }
+
+//  test("Usermeta should be inserted") {
+//    //val email = UUID.randomUUID().toString + "testing1@mail"
+//    val email = "nn"
+//    val usermeta = UserMeta(email, "hobbytest", List("aa","bb","cc"))
+//    dbService.use{service =>
+//      service.createUserMeta(usermeta)
+//    }.unsafeRunSync()
+//  }
+
+    test("Usermeta should be selected") {
+      val email = UUID.randomUUID().toString + "||| SELECTMETA"
+      val user = Userinfo(email, "nametest", 21)
+      val meta = UserMeta(email, "hobby1", List("a", "b", "c"))
+      val result = dbService.use{service =>
+        service.createUser(user) *> service.createUserMeta(meta) *> service.readUserMeta(email)
+      }.unsafeRunSync()
+      assert(result.nonEmpty && result.get.email == email)
+    }
+
+  test("Usermeta should be inserted") {
+    val email = UUID.randomUUID().toString + "||| INSERTMETA"
+    val user = Userinfo(email, "nametest", 21)
+    val meta = UserMeta(email, "hobby1", List("a", "b", "c"))
+    val result = dbService.use { service =>
+      service.createUser(user) *> service.createUserMeta(meta) *> service.readUserMeta(email)
+    }.unsafeRunSync()
+    assert(result.nonEmpty && result.get.email == email)
+  }
+
+  test("Usermeta should be deleted") {
+    val email = UUID.randomUUID().toString + "||| DELETEMETA"
+    val user = Userinfo(email, "deletetest", 55)
+    val meta = UserMeta(email, "delete", List("delete", "this"))
+    val result = dbService.use{service =>
+      service.createUser(user) *>
+        service.createUserMeta(meta) *>
+          service.deleteUserMeta(meta.email) *>
+              service.readUserMeta(meta.email)
+    }.unsafeRunSync()
+    assert(result.isEmpty)
+  }
+
+  test("Usermeta should be updated") {
+    val email = UUID.randomUUID().toString + "||| UPDATEMETA"
+    val user = Userinfo(email, "updatemeta", 31)
+    val meta = UserMeta(email, "updatemeta", List("UPDATE", "this"))
+    val new_hobby = "new_hobby"
+    val new_meta = UserMeta(email, new_hobby, List("Updated", "list"))
+    val result = dbService.use{service =>
+      service.createUser(user) *>
+        service.createUserMeta(meta) *>
+          service.updateUserMeta(new_meta) *>
+            service.readUserMeta(new_meta.email)
+    }.unsafeRunSync()
+    assert(result.nonEmpty && result.get.hobby == new_hobby)
+  }
+
+  test("Friend's email should be added") {
+    //val result =
+    dbService.use{service =>
+      service
+        .addEmailFriend("add", "pskkk")
+    }.unsafeRunSync()
+    //assert(result == true)
+  }
+
+  test("Friend's email should be deleted") {
+    dbS
   }
 }

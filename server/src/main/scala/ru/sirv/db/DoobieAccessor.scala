@@ -5,6 +5,7 @@ import doobie._
 import doobie.implicits._
 import doobie.postgres.implicits._
 import ru.sirv.domain.{UserMeta, Userinfo}
+import ru.sirv.db._
 
 class DoobieAccessor extends DbRepository[ConnectionIO] {
 
@@ -25,7 +26,7 @@ class DoobieAccessor extends DbRepository[ConnectionIO] {
            |WHERE email = $email""".stripMargin
 
     query
-      .query[(String,Option[String], Option[Int])]
+      .query[(String, Option[String], Option[Int])]
       .option.map {
       case Some((e, Some(n), a)) => Userinfo(e, n, a).some
       case _ => none
@@ -33,33 +34,60 @@ class DoobieAccessor extends DbRepository[ConnectionIO] {
   }
 
 
-  override def updateUser(userinfo: Userinfo): doobie.ConnectionIO[Unit] = ???
-
-  override def deleteUser(email: String): doobie.ConnectionIO[Unit] = ???
-
-  override def insertUserMeta(userinfo: UserMeta): doobie.ConnectionIO[Unit] = ???
-
-  override def selectUserMeta(email: String): doobie.ConnectionIO[Option[UserMeta]] = ???
-
-  override def updateUserMeta(userinfo: UserMeta): doobie.ConnectionIO[Unit] = ???
-
-  override def deleteUserMeta(email: String): doobie.ConnectionIO[Unit] = ???
-
-  def initUser(userId: String): ConnectionIO[Int] = {
+  override def updateUser(userinfo: Userinfo): doobie.ConnectionIO[Unit] = {
     val sql =
-      sql"""INSERT INTO quota_user_rules(user_id)
-           |VALUES ($userId)
-           |""".stripMargin
-
-    sql.update.run
+      sql"""UPDATE userinfo
+           |SET email = ${userinfo.email}, name = ${userinfo.name}, age = ${userinfo.age}
+           |WHERE email = ${userinfo.email}""".stripMargin
+    sql.update.run.void
   }
 
-  def getUserGroups(userId: String): ConnectionIO[List[String]] = {
-    val query =
-      sql"""SELECT groups
-           |FROM quota_user_rules
-           |WHERE user_id = $userId""".stripMargin
+  override def deleteUser(email: String): doobie.ConnectionIO[Unit] = {
+    val sql =
+      sql"""delete from userinfo where email=$email"""
+    sql.update.run.void
+  }
 
-    query.query[Option[List[String]]].unique.map(_.getOrElse(List.empty))
+  override def insertUserMeta(usermeta: UserMeta): doobie.ConnectionIO[Unit] = {
+    val sql =
+      sql"""INSERT INTO usermeta(email, hobby, friendsemail)
+           |VALUES (${usermeta.email}, ${usermeta.hobby}, ${usermeta.friendsEmails})
+           |""".stripMargin
+    sql.update.run.void
+  }
+
+  override def selectUserMeta(email: String): doobie.ConnectionIO[Option[UserMeta]] = {
+    val query =
+      sql"""SELECT email,hobby,friendsemail
+           |FROM usermeta
+           |WHERE email = ${email}""".stripMargin
+    query
+      .query[(String, String, List[String])]
+      .option.map {
+      case Some((e, n, a)) => UserMeta(e, n, a).some
+      case _ => none
+    }
+  }
+
+  override def updateUserMeta(usermeta: UserMeta): doobie.ConnectionIO[Unit] = {
+    val sql =
+      sql"""UPDATE usermeta
+           |SET email = ${usermeta.email}, hobby = ${usermeta.hobby}, friendsemail = ${usermeta.friendsEmails}
+           |WHERE email = ${usermeta.email}""".stripMargin
+    sql.update.run.void
+  }
+
+  override def deleteUserMeta(email: String): doobie.ConnectionIO[Unit] = {
+    val sql =
+      sql"""delete from usermeta where email=$email"""
+    sql.update.run.void
+  }
+
+
+  def addEmailFriend(email: String, add: String): doobie.ConnectionIO[Unit] = {
+    val sql =
+      sql"""update usermeta set friendsemail = array_append(friendsemail, $add) where email = $email""".stripMargin
+    //sql"""UPDATE usermeta SET friendsemail = array_append(friendsemail, $add) WHERE email = $email""".stripMargin
+    sql.updateWithLogHandler(LogHandler.jdkLogHandler).run.void
   }
 }

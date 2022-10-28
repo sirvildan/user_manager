@@ -63,7 +63,7 @@ class JDBCRepository(connection: Connection) extends DbRepository[Future] {
   def insertUserMeta(userMeta: UserMeta): Future[Unit] = Future {
     val sql =
       s"""
-         |insert into UserMeta (email, hobby, friendsemail) values ('${userMeta.email}', '${userMeta.hobby}', '${userMeta.friendsemail}')
+         |insert into UserMeta (email, hobby, friendsemail) values ('${userMeta.email}', '${userMeta.hobby}', '${userMeta.friendsEmails}')
          |""".stripMargin // FIXME getOrElse for age
     val statement = connection.createStatement()
     statement.execute(sql)
@@ -81,8 +81,8 @@ class JDBCRepository(connection: Connection) extends DbRepository[Future] {
     while (resultSet.next()) {
       val email = resultSet.getString("email")
       val hobby = resultSet.getString("hobby")
-      val friendsemail = resultSet.getString("friendsemail")           //////////////////////////Seq
-      val userMeta = UserMeta(email, hobby, friendsemail)
+      val friendsemail = resultSet.getString("friendsemail") //////////////////////////Seq
+      val userMeta = UserMeta(email, hobby, List(friendsemail))
       builder.addOne(userMeta)
     }
     val usersMeta = builder.result()
@@ -93,7 +93,7 @@ class JDBCRepository(connection: Connection) extends DbRepository[Future] {
     val updatesql =
       s"""
          |UPDATE UserMeta
-         |SET email = '${userMeta.email}', hobby = '${userMeta.hobby}', friendsemail = '${userMeta.friendsemail}'
+         |SET email = '${userMeta.email}', hobby = '${userMeta.hobby}', friendsemail = '${userMeta.friendsEmails}'
          |WHERE email = '${userMeta.email}'
          |""".stripMargin // FIXME option age
     val statement = connection.createStatement()
@@ -113,7 +113,7 @@ class JDBCRepository(connection: Connection) extends DbRepository[Future] {
     else Future.failed(new RuntimeException("Meta delete failed"))
   }
 
-  def addFriendEmail(email: String, appendEmail: String): Future[Unit] = {         // FIXME MULTI VALUE ADDITION
+  def addFriendEmail(email: String, appendEmail: String): Future[Unit] = { // FIXME MULTI VALUE ADDITION
     val addEmail =
       s"""
         UPDATE UserMeta

@@ -33,17 +33,17 @@ class UserService{
 
   def getAllMeta: IO[Seq[UserMeta]] = {
     logger.info("Get all usermeta")
-    Seq(UserMeta("metamail@met", "hobbytest", "mail1,mail2"), UserMeta("metamail22@aa.ru", "hobby22","mail3,mail4")).pure[IO]
+    Seq(UserMeta("metamail@met", "hobbytest", List("mail1", "mail2")), UserMeta("metamail22@aa.ru", "hobby22",List("mail3", "mail4"))).pure[IO]
   }
 
   def getUserMeta(usermetaId: UUID): IO[UserMeta] = {
     logger.info(s"Get userinfo by id $usermetaId")
-    IO.pure(UserMeta("meta@mail", "fishing", "mail1, mail2"))
+    IO.pure(UserMeta("meta@mail", "fishing", List("mail1", "mail2")))
   }
 
   def deleteUserMeta(usermetaId: UUID): IO[UserMeta] = {
     logger.info(s"Delete userinfo by $usermetaId")
-    IO.pure(UserMeta("meta@mail", "fishing", "mail1, mail2"))
+    IO.pure(UserMeta("meta@mail", "fishing", List("mail1", "mail2")))
   }
   def addUserMeta(UserMeta: UserMeta): IO[UUID] = {
     logger.info(s"Add userinfo $UserMeta")
