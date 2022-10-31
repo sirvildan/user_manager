@@ -55,7 +55,7 @@ class DoobieTest extends AnyFunSuite with BeforeAndAfterAll {
   test("Userinfo should be deleted") {
     val email = UUID.randomUUID().toString + "||| DELETEINFO"
     val user = Userinfo(email, "new", 1)
-    val result = dbService.use { service =>
+    val result: Option[Userinfo] = dbService.use { service =>
       service.createUser(user) *>
         service.deleteUser(user.email) *>
         service.readUser(user.email)
@@ -94,7 +94,7 @@ class DoobieTest extends AnyFunSuite with BeforeAndAfterAll {
         service.deleteUserMeta(meta.email) *>
         service.readUserMeta(meta.email)
     }.unsafeRunSync()
-    assert(result.get.email == None)
+    assert(result.isEmpty)
   }
 
   test("Usermeta should be updated") {
@@ -115,22 +115,22 @@ class DoobieTest extends AnyFunSuite with BeforeAndAfterAll {
   test("Friend's email should be added") {
     val email = "add"
     val friendEmail = "fintest"
-    val smth = dbService.use {
+    val result = dbService.use {
       service =>
         service.addEmailFriend(email, friendEmail) *>
           service.readUserMeta(email)
     }.unsafeRunSync()
-    assert(smth.get.friendsEmails.exists(_ == friendEmail))
+    assert(result.isDefined && result.get.friendsEmails.contains(friendEmail))
   }
 
   test("Friend's email should be deleted") {
     val email = "add"
     val friendEmail = "fintest"
-    val smth = dbService.use {
+    val result: Option[UserMeta] = dbService.use {
       service =>
         service.deleteEmailFriend(email, friendEmail) *>
           service.readUserMeta(email)
     }.unsafeRunSync()
-    assert(smth.get.friendsEmails.exists(_ != friendEmail))
+    assert(result.isDefined && result.get.friendsEmails.exists(_ != friendEmail))
   }
 }
