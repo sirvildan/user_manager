@@ -26,7 +26,9 @@ trait DbService[F[_]] {
 
   def addEmailFriend(email: String, friendEmail: String): F[Unit]
 
-  def deleteEmailFriend(email: String): F[Unit]
+  def deleteEmailFriend(email: String, friendEmail: String): F[Unit]
+
+  def checkLength(email: String): F[Unit]
 }
 
 object DbService {
@@ -60,7 +62,11 @@ object DbService {
         override def addEmailFriend(email: String, friendEmail: String): IO[Unit] =
           accessor.addEmailFriend(email, friendEmail).transact(xa)
 
-        override def deleteEmailFriend(email: String): IO[Unit] = ???
+        override def deleteEmailFriend(email: String, friendEmail: String): IO[Unit] =
+          accessor.deleteEmailFriend(email, friendEmail).transact(xa)
+
+        override def checkLength(email: String): IO[Unit] =
+          accessor.checkLength(email).transact(xa)
       }
     }
 }

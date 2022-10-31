@@ -84,10 +84,20 @@ class DoobieAccessor extends DbRepository[ConnectionIO] {
   }
 
 
-  def addEmailFriend(email: String, add: String): doobie.ConnectionIO[Unit] = {
+  def addEmailFriend(email: String, friendEmail: String): doobie.ConnectionIO[Unit] = {
     val sql =
-      sql"""update usermeta set friendsemail = array_append(friendsemail, $add) where email = $email""".stripMargin
-    //sql"""UPDATE usermeta SET friendsemail = array_append(friendsemail, $add) WHERE email = $email""".stripMargin
-    sql.updateWithLogHandler(LogHandler.jdkLogHandler).run.void
+      sql"""update usermeta set friendsemail = array_append(friendsemail, $friendEmail) where email = $email"""
+    sql.update.run.void
+  }
+
+  def deleteEmailFriend(email: String, friendEmail: String): doobie.ConnectionIO[Unit] = {
+    val sql =
+      sql"""update usermeta set friendsemail = array_remove(friendsemail, $friendEmail) where email = $email"""
+      sql.update.run.void
+  }
+
+  def checkLength(email: String): doobie.ConnectionIO[Unit] = {
+    val sql = sql"""SELECT friendsemail FROM usermeta WHERE email = $email"""
+    sql.update.run.void
   }
 }
