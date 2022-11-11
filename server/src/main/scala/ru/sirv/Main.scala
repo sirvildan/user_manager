@@ -1,27 +1,27 @@
 package ru.sirv
 
 import cats.effect.{ExitCode, IO, IOApp, Resource}
-import com.comcast.ip4s._
 import com.typesafe.scalalogging.Logger
-import org.http4s.ember.server._
-import org.http4s.server.Server
+import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.slf4j._
+import ru.sirv.conf.ConfigResource
+import ru.sirv.db.DbModule
 import ru.sirv.http.HttpModule
 import ru.sirv.service.UserService
 
 object Main extends IOApp {
-  implicit val logger = Logger("Main")
-
+  implicit val loggerCats: SelfAwareStructuredLogger[IO] = org.typelevel.log4cats.LoggerFactory.getLoggerFromName[IO]("Main")
+  implicit val loggerTS: Logger = com.typesafe.scalalogging.Logger("Main") // TODO remove
   def run(args: List[String]): IO[ExitCode] = {
-    val userService = new UserService()
-    val httpModule = HttpModule(userService)
+    val program = for {
+      config <- ConfigResource.extractConfig
+      _ <- Resource.eval(new DbModule().migrate(config.db.postgres.connection, Seq(config.db.migrationLocation)))
+      dbService <- new DbModule().buildService(config.db.postgres.connection, config.db.postgres.commonPool, "PoolName")
+      userService = new UserService(dbService)
+      httpModule = HttpModule.apply(userService, config.http)
+      server <- httpModule.service.server
+    } yield server
 
-    val server: Resource[IO, Server] = EmberServerBuilder
-      .default[IO]
-      .withHost(ipv4"0.0.0.0")
-      .withPort(port"8080")
-      .withHttpApp(httpModule.httpApp)
-      .build
-
-    server.useForever.as(ExitCode.Success)
+    program.useForever.as(ExitCode.Success)
   }
 }

@@ -11,8 +11,9 @@ trait HttpModule {
 }
 
 object HttpModule {
-  def apply(userService: UserService)(implicit logger: Logger): HttpModule = new HttpModule {
-    override def service: HttpService = new HttpService(userService)
+  case class Config(server: HttpService.Config)
+  def apply(userService: UserService, config: Config)(implicit logger: Logger): HttpModule = new HttpModule {
+    override def service: HttpService = new HttpService(userService, config.server)
 
     override def httpApp: HttpApp[IO] = service.httpApp
   }

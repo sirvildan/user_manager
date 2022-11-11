@@ -3,14 +3,21 @@ package ru.sirv.service
 import cats.effect.IO
 import cats.implicits.catsSyntaxApplicativeId
 import com.typesafe.scalalogging.Logger
+import ru.sirv.db.DbService
 import ru.sirv.domain._
+
 import java.util.UUID
 
-class UserService{
+class UserService(dbService: DbService[IO]){
   implicit val logger = Logger("UserService")
   def getUser(userId: UUID): IO[Userinfo] = {
     logger.info(s"Get userinfo by id $userId")
-    IO.pure(Userinfo("ss@mal.ru", "mock", None))
+    dbService.readUserbyID(userId).flatMap {
+      case Some(value) =>
+        value.pure[IO]
+      case None =>
+        IO.raiseError(new NoSuchElementException(s"User not found by [$userId]"))
+    }
   }
   def getAllUsers: IO[Seq[Userinfo]] = {
     logger.info("Get all users")

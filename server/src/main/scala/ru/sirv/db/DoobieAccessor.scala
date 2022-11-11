@@ -7,6 +7,8 @@ import doobie.postgres.implicits._
 import ru.sirv.domain.{UserMeta, Userinfo}
 import ru.sirv.db._
 
+import java.util.UUID
+
 class DoobieAccessor extends DbRepository[ConnectionIO] {
 
   def insertUser(userinfo: Userinfo): ConnectionIO[Unit] = {
@@ -18,6 +20,19 @@ class DoobieAccessor extends DbRepository[ConnectionIO] {
     sql.update.run.void
   }
 
+  override def selectUserbyId(id: UUID): doobie.ConnectionIO[Option[Userinfo]] = {
+    val query =
+      sql"""SELECT email,name,age
+           |FROM userinfo
+           |WHERE id = $id""".stripMargin
+
+    query
+      .query[(String, Option[String], Option[Int])]
+      .option.map {
+      case Some((e, Some(n), a)) => Userinfo(e, n, a).some
+      case _ => none
+    }
+  }
 
   override def selectUser(email: String): ConnectionIO[Option[Userinfo]] = {
     val query =
@@ -94,10 +109,5 @@ class DoobieAccessor extends DbRepository[ConnectionIO] {
     val sql =
       sql"""update usermeta set friendsemail = array_remove(friendsemail, $friendEmail) where email = $email"""
       sql.update.run.void
-  }
-
-  def checkLength(email: String): doobie.ConnectionIO[Unit] = {
-    val sql = sql"""SELECT friendsemail FROM usermeta WHERE email = $email"""
-    sql.update.run.void
   }
 }

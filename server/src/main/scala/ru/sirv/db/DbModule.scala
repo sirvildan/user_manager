@@ -20,6 +20,10 @@ class DbModule {
     IO.whenA(locations.nonEmpty)(DBMigrations.migrate(db, locations.head, locations.tail:_*).void)
 }
 object DbModule {
+  case class Config(postgres: PostgresConfig, migrationLocation: String)
+
+  case class PostgresConfig(connection: ConnectionConfig, commonPool: PoolConfig)
+
   final case class ConnectionConfig(
                                      jdbcDriverName: String,
                                      jdbcUrl: String,

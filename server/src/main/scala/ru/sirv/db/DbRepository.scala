@@ -1,11 +1,14 @@
 package ru.sirv.db
 import ru.sirv.domain._
 
+import java.util.UUID
+
 trait DbRepository[F[_]] {
   def insertUser(userinfo: Userinfo): F[Unit]
   def selectUser(email: String): F[Option[Userinfo]]
   def updateUser(userinfo: Userinfo): F[Unit]
   def deleteUser(email: String): F[Unit]
+  def selectUserbyId(id: UUID): F[Option[Userinfo]]
 
 //  -----------------------------------------------------------
 

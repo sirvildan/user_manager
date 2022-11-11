@@ -5,6 +5,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import ru.sirv.domain._
 
+import java.util.UUID
+
 class JDBCRepository(connection: Connection) extends DbRepository[Future] {
   def insertUser(userinfo: Userinfo): Future[Unit] = Future {
     val sql =
@@ -14,6 +16,27 @@ class JDBCRepository(connection: Connection) extends DbRepository[Future] {
     val statement = connection.createStatement()
     statement.execute(sql)
     println("Userinfo inserted")
+  }
+
+
+  override def selectUserbyId(id: UUID): Future[Option[Userinfo]] = Future {
+    val selectsql =
+      s"""
+         |select * from "Userinfo" where id='${id}'
+         |""".stripMargin
+    val statement = connection.createStatement()
+    val resultSet: ResultSet = statement.executeQuery(selectsql)
+    val builder = List.newBuilder[Userinfo]
+    while (resultSet.next()) {
+      val email = resultSet.getString("email")
+      val name = resultSet.getString("name")
+      val age = resultSet.getInt("age")
+      val userinfo = Userinfo(email, name, age)
+      builder.addOne(userinfo)
+    }
+
+    val users = builder.result()
+    users.headOption
   }
 
   def selectUser(email: String): Future[Option[Userinfo]] = Future {

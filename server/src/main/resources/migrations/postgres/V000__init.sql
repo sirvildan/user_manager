@@ -1,6 +1,6 @@
 create table if not exists Userinfo
 (
-    id    serial
+    id    uuid
         primary key,
     email varchar(128) not null
         unique,
@@ -10,7 +10,7 @@ create table if not exists Userinfo
 
 create table if not exists usermeta
 (
-    id           serial
+    id           uuid
         primary key,
     email        varchar(128) not null
         unique

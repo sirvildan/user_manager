@@ -5,10 +5,14 @@ import doobie.implicits._
 import doobie.util.transactor.Transactor
 import ru.sirv.domain._
 
+import java.util.UUID
+
 trait DbService[F[_]] {
   def createUser(userinfo: Userinfo): F[Unit]
 
   def readUser(email: String): F[Option[Userinfo]]
+
+  def readUserbyID(id: UUID): F[Option[Userinfo]]
 
   def updateUser(userinfo: Userinfo): F[Unit]
 
@@ -27,8 +31,6 @@ trait DbService[F[_]] {
   def addEmailFriend(email: String, friendEmail: String): F[Unit]
 
   def deleteEmailFriend(email: String, friendEmail: String): F[Unit]
-
-  def checkLength(email: String): F[Unit]
 }
 
 object DbService {
@@ -37,6 +39,10 @@ object DbService {
       new DbService[IO] {
         override def createUser(userinfo: Userinfo): IO[Unit] =
           accessor.insertUser(userinfo).transact(xa)
+
+
+        override def readUserbyID(id: UUID): IO[Option[Userinfo]] =
+          accessor.selectUserbyId(id).transact(xa)
 
         override def readUser(email: String): IO[Option[Userinfo]] =
           accessor.selectUser(email).transact(xa)
@@ -64,9 +70,6 @@ object DbService {
 
         override def deleteEmailFriend(email: String, friendEmail: String): IO[Unit] =
           accessor.deleteEmailFriend(email, friendEmail).transact(xa)
-
-        override def checkLength(email: String): IO[Unit] =
-          accessor.checkLength(email).transact(xa)
       }
     }
 }
