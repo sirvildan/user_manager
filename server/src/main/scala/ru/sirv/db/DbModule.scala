@@ -12,7 +12,7 @@ import scala.concurrent.duration.FiniteDuration
 class DbModule {
   def buildService(db: ConnectionConfig, pool: PoolConfig, poolName: String): Resource[IO, DbService[IO]] =
     DbModule.transactor(db, pool, poolName).flatMap{xa =>
-      val accessor = new DoobieAccessor
+      val accessor = new UserAccessor
       DbService.impl(xa, accessor)
     }
 

@@ -34,7 +34,7 @@ trait DbService[F[_]] {
 }
 
 object DbService {
-  def impl(xa: Transactor[IO], accessor: DoobieAccessor): Resource[IO, DbService[IO]] =
+  def impl(xa: Transactor[IO], accessor: UserAccessor): Resource[IO, DbService[IO]] =
     Resource.pure {
       new DbService[IO] {
         override def createUser(userinfo: Userinfo): IO[Unit] =

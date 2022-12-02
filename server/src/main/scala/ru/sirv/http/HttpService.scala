@@ -21,27 +21,27 @@ class HttpService(service: UserService, config: Config)(implicit logger: Logger)
       Ok(s"Hello, $name.")
   }
   def userService: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    case GET -> Root / "users" =>
-      service.getAllUsers.flatMap(Ok(_))
-    case GET -> Root / "users" / UUIDVar(userId) =>
-      service.getUser(userId).flatMap(Ok(_))
+//    case GET -> Root / "users" =>
+//      service.getAllUsers.flatMap(Ok(_))
+    case GET -> Root / "users" / email =>
+      service.getUser(email).flatMap(Ok(_))
     case req@POST -> Root / "users" =>
       req.decodeJson[Userinfo].flatMap(userinfo => service.addUser(userinfo)) *> Created()
-    case req@PUT -> Root / "users" / UUIDVar(userId) =>
-      req.decodeJson[Userinfo].flatMap(userinfo => service.updateUser(userinfo, userId)) *> Ok()
-    case DELETE -> Root / "users" / UUIDVar(userId) =>
-      service.deleteUser(userId) *> Ok()
+    case req@PUT -> Root / "users"  =>
+      req.decodeJson[Userinfo].flatMap(userinfo => service.updateUser(userinfo)) *> Ok()
+    case DELETE -> Root / "users" / email =>
+      service.deleteUser(email) *> Ok()
 
-    case GET -> Root / "usermeta" =>
-      service.getAllMeta.flatMap(Ok(_))
-    case GET -> Root / "usermeta" / UUIDVar(usermetaId) =>
-      service.getUserMeta(usermetaId).flatMap(Ok(_))
+//    case GET -> Root / "usermeta" =>
+//      service.getAllMeta.flatMap(Ok(_))
+    case GET -> Root / "usermeta" / email =>
+      service.getUserMeta(email).flatMap(Ok(_))
     case req@POST -> Root / "usermeta" =>
       req.decodeJson[UserMeta].flatMap(userMeta => service.addUserMeta(userMeta)) *> Created()
-    case req@PUT -> Root / "usermeta" / UUIDVar(usermetaId) =>
-      req.decodeJson[UserMeta].flatMap(userMeta => service.updateUserMeta(userMeta, usermetaId)) *> Ok()
-    case DELETE -> Root / "usermeta" / UUIDVar(usermetaId) =>
-      service.deleteUserMeta(usermetaId) *> Ok()
+    case req@PUT -> Root / "usermeta" =>
+      req.decodeJson[UserMeta].flatMap(userMeta => service.updateUserMeta(userMeta)) *> Ok()
+    case DELETE -> Root / "usermeta" / email =>
+      service.deleteUserMeta(email) *> Ok()
   }
   def services = userService <+> helloWorldService
   def httpApp = Router("/" -> helloWorldService, "/api" -> services).orNotFound

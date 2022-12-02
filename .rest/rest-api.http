@@ -1,4 +1,7 @@
-GET http://localhost:8080/api/users
+#GET http://localhost:8080/api/users/
+#Accept: application/json
+
+GET http://localhost:8080/api/users/testmail
 Accept: application/json
 
 ###
@@ -8,41 +11,31 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "mail333@k",
-  "name": "Name333",
-  "age": 121
+  "email": "testmail",
+  "name": "Name111",
+  "age": 111
 }
 
 ###
 
-PUT http://localhost:8080/api/users/a075b15f-d34c-4c3a-8aeb-23b294af6f3b
+PUT http://localhost:8080/api/users
 Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "srgk",
-  "name": "Nassdde333",
-  "age": 187
+  "email": "testmail",
+  "name": "Name222",
+  "age": 222
 }
 
 ###
 
-DELETE http://localhost:8080/api/users/a075b15f-d34c-4c3a-8aeb-23b294af6f3b
-Accept: application/json
-
-###
-
-GET http://localhost:8080/api/users/a075b15f-d34c-4c3a-8aeb-23b294af6f3b
+DELETE http://localhost:8080/api/users/testmail
 Accept: application/json
 
 ###
 
 GET http://localhost:8080/api/usermeta
-Accept: application/json
-
-###
-
-GET http://localhost:8080/api/usermeta/a075b15f-d34c-4c3a-8aeb-23b294af6f3ab
 Accept: application/json
 
 ###
@@ -67,6 +60,7 @@ Content-Type: application/json
 "email": "mail33@meta.ru",
 "hobby": "metahob",
 "friendsemail": "friend1@meta.ru, friend2@meta.ru"
+}
 
 ###
 

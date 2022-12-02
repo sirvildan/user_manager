@@ -9,12 +9,13 @@ import ru.sirv.db._
 
 import java.util.UUID
 
-class DoobieAccessor extends DbRepository[ConnectionIO] {
+class UserAccessor extends DbRepository[ConnectionIO] {
 
   def insertUser(userinfo: Userinfo): ConnectionIO[Unit] = {
+    val id = UUID.randomUUID()
     val sql =
-      sql"""INSERT INTO userinfo(email, name, age)
-           |VALUES (${userinfo.email}, ${userinfo.name}, ${userinfo.age})
+      sql"""INSERT INTO userinfo(id, email, name, age)
+           |VALUES ($id, ${userinfo.email}, ${userinfo.name}, ${userinfo.age})
            |""".stripMargin
 
     sql.update.run.void

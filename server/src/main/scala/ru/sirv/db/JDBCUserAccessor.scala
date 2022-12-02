@@ -7,7 +7,7 @@ import ru.sirv.domain._
 
 import java.util.UUID
 
-class JDBCRepository(connection: Connection) extends DbRepository[Future] {
+class JDBCUserAccessor(connection: Connection) extends DbRepository[Future] {
   def insertUser(userinfo: Userinfo): Future[Unit] = Future {
     val sql =
       s"""

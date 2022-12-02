@@ -18,7 +18,7 @@ object Main extends IOApp {
       _ <- Resource.eval(new DbModule().migrate(config.db.postgres.connection, Seq(config.db.migrationLocation)))
       dbService <- new DbModule().buildService(config.db.postgres.connection, config.db.postgres.commonPool, "PoolName")
       userService = new UserService(dbService)
-      httpModule = HttpModule.apply(userService, config.http)
+      httpModule = HttpModule(userService, config.http)
       server <- httpModule.service.server
     } yield server
 
