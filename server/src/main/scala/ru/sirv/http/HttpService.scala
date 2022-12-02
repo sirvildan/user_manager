@@ -3,18 +3,18 @@ package ru.sirv.http
 import cats.effect.{IO, Resource}
 import cats.syntax.all._
 import com.comcast.ip4s.{Host, Port}
-import com.typesafe.scalalogging.Logger
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.circe.toMessageSyntax
 import org.http4s.dsl.io._
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.{Router, Server}
+import org.typelevel.log4cats.Logger
 import ru.sirv.service._
 import ru.sirv.domain._
 import ru.sirv.http.HttpService.Config
 
-class HttpService(service: UserService, config: Config)(implicit logger: Logger){
+class HttpService(service: UserService, config: Config)(implicit logger: Logger[IO]){
   def helloWorldService: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "hello" / name =>
       logger.info("Received request")

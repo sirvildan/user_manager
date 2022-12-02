@@ -1,8 +1,7 @@
 package ru.sirv
 
 import cats.effect.{ExitCode, IO, IOApp, Resource}
-import com.typesafe.scalalogging.Logger
-import org.typelevel.log4cats.SelfAwareStructuredLogger
+import org.typelevel.log4cats.{LoggerFactory, SelfAwareStructuredLogger}
 import org.typelevel.log4cats.slf4j._
 import ru.sirv.conf.ConfigResource
 import ru.sirv.db.DbModule
@@ -10,8 +9,8 @@ import ru.sirv.http.HttpModule
 import ru.sirv.service.UserService
 
 object Main extends IOApp {
-  implicit val loggerCats: SelfAwareStructuredLogger[IO] = org.typelevel.log4cats.LoggerFactory.getLoggerFromName[IO]("Main")
-  implicit val loggerTS: Logger = com.typesafe.scalalogging.Logger("Main") // TODO remove
+  implicit val loggerCats: SelfAwareStructuredLogger[IO] = LoggerFactory.getLoggerFromName[IO]("Main")
+
   def run(args: List[String]): IO[ExitCode] = {
     val program = for {
       config <- ConfigResource.extractConfig

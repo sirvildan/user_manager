@@ -14,7 +14,6 @@ object Dependencies {
     "com.github.pureconfig" %% "pureconfig"            % "0.17.1"
   )
   val logging = Seq(
-    "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
   "ch.qos.logback" % "logback-core" % logbackVersion,
   "ch.qos.logback" % "logback-classic" % logbackVersion
   )
@@ -52,7 +51,7 @@ object Dependencies {
   )
 
   val lib = Def.setting(
-    test ++ database ++ logging ++ lihaoyi ++ http4s ++ circe ++ doobie ++ pureconfig ++ log4Cats
+    test ++ database ++ lihaoyi ++ http4s ++ circe ++ doobie ++ pureconfig ++ logging ++ log4Cats
   )
 }
 
@@ -60,7 +59,6 @@ object Versions {
   val scalaTestVersion = "3.2.12"
   val postgresqlVersion = "42.4.0"
   val flywayVersion = "8.4.0"
-  val scalaLoggingVersion = "3.9.5"
   val lihaoyiVersion = "0.6.9"
   //val lihaoyi_sec = "0.7.0"
   val logbackVersion = "1.2.3"

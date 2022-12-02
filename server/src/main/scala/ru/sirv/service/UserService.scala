@@ -2,14 +2,15 @@ package ru.sirv.service
 
 import cats.effect.IO
 import cats.implicits.catsSyntaxApplicativeId
-import com.typesafe.scalalogging.Logger
+import org.typelevel.log4cats.{Logger, LoggerFactory}
+import org.typelevel.log4cats.slf4j._
 import ru.sirv.db.DbService
 import ru.sirv.domain._
 
 class UserService(dbService: DbService[IO]){
-  implicit val logger: Logger = Logger("UserService")
+  implicit val logger: Logger[IO] = LoggerFactory.getLoggerFromName[IO]("UserService")
   def getUser(email: String): IO[Userinfo] = {
-    logger.info(s"Get userinfo $email")
+    logger.info(s"Get userinfo $email") *>
     dbService.readUser(email).flatMap {
       case Some(value) =>
         value.pure[IO]
@@ -19,22 +20,22 @@ class UserService(dbService: DbService[IO]){
   }
 
   def deleteUser(email: String): IO[Unit] = {
-    logger.info(s"Delete userinfo by $email")
+    logger.info(s"Delete userinfo by $email") *>
     dbService.deleteUser(email)
   }
 
   def addUser(userinfo: Userinfo): IO[Unit] = {
-    logger.info(s"Add userinfo $userinfo")
+    logger.info(s"Add userinfo $userinfo") *>
     dbService.createUser(userinfo)
   }
 
   def updateUser(userinfo: Userinfo): IO[Unit] = {
-    logger.info(s"Update userinfo $userinfo")
+    logger.info(s"Update userinfo $userinfo") *>
     dbService.updateUser(userinfo)
   }
 
   def getUserMeta(email: String): IO[UserMeta] = {
-    logger.info(s"Get usermeta by id $email")
+    logger.info(s"Get usermeta by id $email") *>
     dbService.readUserMeta(email).flatMap {
       case Some(value) =>
         value.pure[IO]
@@ -44,7 +45,7 @@ class UserService(dbService: DbService[IO]){
   }
 
   def deleteUserMeta(email: String): IO[UserMeta] = {
-    logger.info(s"Delete userinfo by $email")
+    logger.info(s"Delete userinfo by $email") *>
     dbService.readUserMeta(email).flatMap {
       case Some(value) =>
         dbService.deleteUserMeta(email).as(value)
@@ -54,12 +55,12 @@ class UserService(dbService: DbService[IO]){
   }
 
   def addUserMeta(userMeta: UserMeta): IO[Unit] = {
-    logger.info(s"Add userinfo $userMeta")
+    logger.info(s"Add userinfo $userMeta") *>
     dbService.createUserMeta(userMeta)
   }
 
   def updateUserMeta(userMeta: UserMeta): IO[Unit] = {
-    logger.info(s"Update userinfo $UserMeta")
+    logger.info(s"Update userinfo $UserMeta") *>
     dbService.updateUserMeta(userMeta)
   }
 }
