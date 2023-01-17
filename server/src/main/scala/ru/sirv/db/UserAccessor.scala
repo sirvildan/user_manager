@@ -66,9 +66,10 @@ class UserAccessor extends DbRepository[ConnectionIO] {
   }
 
   override def insertUserMeta(usermeta: UserMeta): doobie.ConnectionIO[Unit] = {
+    val id = UUID.randomUUID()
     val sql =
-      sql"""INSERT INTO usermeta(email, hobby, friendsemail)
-           |VALUES (${usermeta.email}, ${usermeta.hobby}, ${usermeta.friendsEmails})
+      sql"""INSERT INTO usermeta(id, email, hobby, friendsemail)
+           |VALUES ($id, ${usermeta.email}, ${usermeta.hobby}, ${usermeta.friendsEmails})
            |""".stripMargin
     sql.update.run.void
   }

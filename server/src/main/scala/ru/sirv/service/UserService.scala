@@ -55,7 +55,7 @@ class UserService(dbService: DbService[IO]){
   }
 
   def addUserMeta(userMeta: UserMeta): IO[Unit] = {
-    logger.info(s"Add userinfo $userMeta") *>
+    logger.info(s"Add usermeta $userMeta") *>
     dbService.createUserMeta(userMeta)
   }
 
