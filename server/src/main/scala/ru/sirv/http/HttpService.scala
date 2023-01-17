@@ -17,23 +17,19 @@ import ru.sirv.http.HttpService.Config
 class HttpService(service: UserService, config: Config)(implicit logger: Logger[IO]){
   def helloWorldService: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "hello" / name =>
-      logger.info("Received request")
-      Ok(s"Hello, $name.")
+      logger.info("Received request") >> Ok(s"Hello, $name.")
   }
+
   def userService: HttpRoutes[IO] = HttpRoutes.of[IO] {
-//    case GET -> Root / "users" =>
-//      service.getAllUsers.flatMap(Ok(_))
     case GET -> Root / "users" / email =>
       service.getUser(email).flatMap(Ok(_))
     case req@POST -> Root / "users" =>
-      req.decodeJson[Userinfo].flatMap(userinfo => service.addUser(userinfo)) *> Created()
+      req.decodeJson[Userinfo].flatMap(service.addUser) *> Created()
     case req@PUT -> Root / "users"  =>
       req.decodeJson[Userinfo].flatMap(userinfo => service.updateUser(userinfo)) *> Ok()
     case DELETE -> Root / "users" / email =>
       service.deleteUser(email) *> Ok()
 
-//    case GET -> Root / "usermeta" =>
-//      service.getAllMeta.flatMap(Ok(_))
     case GET -> Root / "usermeta" / email =>
       service.getUserMeta(email).flatMap(Ok(_))
     case req@POST -> Root / "usermeta" =>
@@ -41,7 +37,7 @@ class HttpService(service: UserService, config: Config)(implicit logger: Logger[
     case req@PUT -> Root / "usermeta" =>
       req.decodeJson[UserMeta].flatMap(userMeta => service.updateUserMeta(userMeta)) *> Ok()
     case DELETE -> Root / "usermeta" / email =>
-      service.deleteUserMeta(email) *> Ok()
+      service.deleteUserMeta(email) >> Ok()
   }
   def services = userService <+> helloWorldService
   def httpApp = Router("/" -> helloWorldService, "/api" -> services).orNotFound

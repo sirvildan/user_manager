@@ -15,7 +15,6 @@ object Userinfo {
 
   def apply(email: String, name: String): Userinfo = new Userinfo(email, name, Option.empty[Int])
 
-  //def isEmailValid(email:String): Boolean = email contains "@"
   def isEmailValid(email: String): Boolean = email.contains("@")
 
   implicit val userCEncoder: Encoder[Userinfo] = deriveEncoder[Userinfo]

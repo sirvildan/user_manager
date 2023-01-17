@@ -21,7 +21,7 @@ class UserAccessor extends DbRepository[ConnectionIO] {
     sql.update.run.void
   }
 
-  override def selectUserbyId(id: UUID): doobie.ConnectionIO[Option[Userinfo]] = {
+  override def selectUserById(id: UUID): doobie.ConnectionIO[Option[Userinfo]] = {
     val query =
       sql"""SELECT email,name,age
            |FROM userinfo
@@ -60,7 +60,8 @@ class UserAccessor extends DbRepository[ConnectionIO] {
 
   override def deleteUser(email: String): doobie.ConnectionIO[Unit] = {
     val sql =
-      sql"""delete from userinfo where email=$email"""
+      sql"""DELETE FROM userinfo
+           |WHERE email=$email"""
     sql.update.run.void
   }
 
@@ -95,20 +96,25 @@ class UserAccessor extends DbRepository[ConnectionIO] {
 
   override def deleteUserMeta(email: String): doobie.ConnectionIO[Unit] = {
     val sql =
-      sql"""delete from usermeta where email=$email"""
+      sql"""DELETE from usermeta
+           |WHERE email=$email"""
     sql.update.run.void
   }
 
 
   def addEmailFriend(email: String, friendEmail: String): doobie.ConnectionIO[Unit] = {
     val sql =
-      sql"""update usermeta set friendsemail = array_append(friendsemail, $friendEmail) where email = $email"""
+      sql"""UPDATE usermeta
+           |SET friendsemail = array_append(friendsemail, $friendEmail)
+           |WHERE email = $email"""
     sql.update.run.void
   }
 
   def deleteEmailFriend(email: String, friendEmail: String): doobie.ConnectionIO[Unit] = {
     val sql =
-      sql"""update usermeta set friendsemail = array_remove(friendsemail, $friendEmail) where email = $email"""
+      sql"""UPDATE usermeta
+           |SET friendsemail = array_remove(friendsemail, $friendEmail)
+           |WHERE email = $email"""
       sql.update.run.void
   }
 }

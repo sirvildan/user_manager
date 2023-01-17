@@ -8,7 +8,7 @@ trait DbRepository[F[_]] {
   def selectUser(email: String): F[Option[Userinfo]]
   def updateUser(userinfo: Userinfo): F[Unit]
   def deleteUser(email: String): F[Unit]
-  def selectUserbyId(id: UUID): F[Option[Userinfo]]
+  def selectUserById(id: UUID): F[Option[Userinfo]]
 
 //  -----------------------------------------------------------
 

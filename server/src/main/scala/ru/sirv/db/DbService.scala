@@ -12,7 +12,7 @@ trait DbService[F[_]] {
 
   def readUser(email: String): F[Option[Userinfo]]
 
-  def readUserbyID(id: UUID): F[Option[Userinfo]]
+  def readUserByID(id: UUID): F[Option[Userinfo]]
 
   def updateUser(userinfo: Userinfo): F[Unit]
 
@@ -41,8 +41,8 @@ object DbService {
           accessor.insertUser(userinfo).transact(xa)
 
 
-        override def readUserbyID(id: UUID): IO[Option[Userinfo]] =
-          accessor.selectUserbyId(id).transact(xa)
+        override def readUserByID(id: UUID): IO[Option[Userinfo]] =
+          accessor.selectUserById(id).transact(xa)
 
         override def readUser(email: String): IO[Option[Userinfo]] =
           accessor.selectUser(email).transact(xa)
