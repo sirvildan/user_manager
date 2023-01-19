@@ -8,9 +8,13 @@ ThisBuild / scalaVersion := "2.13.8"
 lazy val root = (project in file("."))
   .aggregate(server, core)
   .dependsOn(server)
+  .configs(IntegrationTest)
   .settings(
-      Compile / run / fork      := true,
-      Compile / run / mainClass := Some("ru.sirv.Main")
+    Defaults.itSettings,
+    libraryDependencies ++= Dependencies.lib.value,
+    Compile / run / fork      := true,
+    Compile / run / mainClass := Some("ru.sirv.Main"),
+    Test / fork := true
   )
 
 lazy val server = (project in file("server"))

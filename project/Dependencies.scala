@@ -2,16 +2,24 @@ import Versions._
 import sbt._
 
 object Dependencies {
-  val test = Seq(
-    "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
+//  val test = Seq(
+//    "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
+//  )
+
+  val IntTest = Seq(
+    "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
+    "com.dimafeng" %% "testcontainers-scala-scalatest" % testcontainersScalaVersion % "test",
+    //"org.testcontainers" % "testcontainers" % "1.15.0-rc2" % Test,
+    "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersScalaVersion % "test"
   )
+
   val database = Seq(
     "org.postgresql" % "postgresql" % postgresqlVersion,
     "org.flywaydb" % "flyway-core" % flywayVersion
   )
 
   val pureconfig = Seq(
-    "com.github.pureconfig" %% "pureconfig"            % "0.17.1"
+    "com.github.pureconfig" %% "pureconfig" % "0.17.1"
   )
   val logging = Seq(
   "ch.qos.logback" % "logback-core" % logbackVersion,
@@ -51,13 +59,13 @@ object Dependencies {
   )
 
   val lib = Def.setting(
-    test ++ database ++ lihaoyi ++ http4s ++ circe ++ doobie ++ pureconfig ++ logging ++ log4Cats
+    IntTest ++ database ++ lihaoyi ++ http4s ++ circe ++ doobie ++ pureconfig ++ logging ++ log4Cats
   )
 }
 
 object Versions {
   val scalaTestVersion = "3.2.12"
-  val postgresqlVersion = "42.4.0"
+  val postgresqlVersion = "42.5.1"
   val flywayVersion = "8.4.0"
   val lihaoyiVersion = "0.6.9"
   //val lihaoyi_sec = "0.7.0"
@@ -66,4 +74,5 @@ object Versions {
   val circeVersion = "0.14.1"
   val doobieVersion = "1.0.0-RC1"
   val NewTypeVersion = "0.4.4"
+  val testcontainersScalaVersion = "0.40.0"
 }
