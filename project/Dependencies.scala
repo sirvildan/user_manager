@@ -9,7 +9,6 @@ object Dependencies {
   val IntTest = Seq(
     "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
     "com.dimafeng" %% "testcontainers-scala-scalatest" % testcontainersScalaVersion % "test",
-    //"org.testcontainers" % "testcontainers" % "1.15.0-rc2" % Test,
     "com.dimafeng" %% "testcontainers-scala-postgresql" % testcontainersScalaVersion % "test"
   )
 
