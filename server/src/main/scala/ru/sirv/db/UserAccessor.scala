@@ -15,8 +15,8 @@ class UserAccessor extends DbRepository[ConnectionIO] {
     val id = UUID.randomUUID()
     val sql =
       sql"""INSERT INTO userinfo(id, email, name, age)
-           |VALUES ($id, ${userinfo.email}, ${userinfo.name}, ${userinfo.age})
-           |""".stripMargin
+            VALUES ($id, ${userinfo.email}, ${userinfo.name}, ${userinfo.age})
+           """.stripMargin
 
     sql.update.run.void
   }
@@ -24,8 +24,8 @@ class UserAccessor extends DbRepository[ConnectionIO] {
   override def selectUserById(id: UUID): doobie.ConnectionIO[Option[Userinfo]] = {
     val query =
       sql"""SELECT email,name,age
-           |FROM userinfo
-           |WHERE id = $id""".stripMargin
+            FROM userinfo
+            WHERE id = $id""".stripMargin
 
     query
       .query[(String, Option[String], Option[Int])]
@@ -38,8 +38,8 @@ class UserAccessor extends DbRepository[ConnectionIO] {
   override def selectUser(email: String): ConnectionIO[Option[Userinfo]] = {
     val query =
       sql"""SELECT email,name,age
-           |FROM userinfo
-           |WHERE email = $email""".stripMargin
+            FROM userinfo
+            WHERE email = $email""".stripMargin
 
     query
       .query[(String, Option[String], Option[Int])]
@@ -53,15 +53,15 @@ class UserAccessor extends DbRepository[ConnectionIO] {
   override def updateUser(userinfo: Userinfo): doobie.ConnectionIO[Unit] = {
     val sql =
       sql"""UPDATE userinfo
-           |SET email = ${userinfo.email}, name = ${userinfo.name}, age = ${userinfo.age}
-           |WHERE email = ${userinfo.email}""".stripMargin
+            SET email = ${userinfo.email}, name = ${userinfo.name}, age = ${userinfo.age}
+            WHERE email = ${userinfo.email}""".stripMargin
     sql.update.run.void
   }
 
   override def deleteUser(email: String): doobie.ConnectionIO[Unit] = {
     val sql =
       sql"""DELETE FROM userinfo
-           |WHERE email=$email"""
+            WHERE email=$email"""
     sql.update.run.void
   }
 
@@ -69,16 +69,16 @@ class UserAccessor extends DbRepository[ConnectionIO] {
     val id = UUID.randomUUID()
     val sql =
       sql"""INSERT INTO usermeta(id, email, hobby, friendsemail)
-           |VALUES ($id, ${usermeta.email}, ${usermeta.hobby}, ${usermeta.friendsEmails})
-           |""".stripMargin
+            VALUES ($id, ${usermeta.email}, ${usermeta.hobby}, ${usermeta.friendsEmails})
+            """.stripMargin
     sql.update.run.void
   }
 
   override def selectUserMeta(email: String): doobie.ConnectionIO[Option[UserMeta]] = {
     val query =
       sql"""SELECT email,hobby,friendsemail
-           |FROM usermeta
-           |WHERE email = ${email}""".stripMargin
+            FROM usermeta
+            WHERE email = ${email}""".stripMargin
     query
       .query[(String, String, List[String])]
       .option.map {
@@ -90,15 +90,15 @@ class UserAccessor extends DbRepository[ConnectionIO] {
   override def updateUserMeta(usermeta: UserMeta): doobie.ConnectionIO[Unit] = {
     val sql =
       sql"""UPDATE usermeta
-           |SET email = ${usermeta.email}, hobby = ${usermeta.hobby}, friendsemail = ${usermeta.friendsEmails}
-           |WHERE email = ${usermeta.email}""".stripMargin
+            SET email = ${usermeta.email}, hobby = ${usermeta.hobby}, friendsemail = ${usermeta.friendsEmails}
+            WHERE email = ${usermeta.email}""".stripMargin
     sql.update.run.void
   }
 
   override def deleteUserMeta(email: String): doobie.ConnectionIO[Unit] = {
     val sql =
       sql"""DELETE from usermeta
-           |WHERE email=$email"""
+            WHERE email=$email"""
     sql.update.run.void
   }
 
@@ -106,16 +106,16 @@ class UserAccessor extends DbRepository[ConnectionIO] {
   def addEmailFriend(email: String, friendEmail: String): doobie.ConnectionIO[Unit] = {
     val sql =
       sql"""UPDATE usermeta
-           |SET friendsemail = array_append(friendsemail, $friendEmail)
-           |WHERE email = $email"""
+            SET friendsemail = array_append(friendsemail, $friendEmail)
+            WHERE email = $email"""
     sql.update.run.void
   }
 
   def deleteEmailFriend(email: String, friendEmail: String): doobie.ConnectionIO[Unit] = {
     val sql =
       sql"""UPDATE usermeta
-           |SET friendsemail = array_remove(friendsemail, $friendEmail)
-           |WHERE email = $email"""
+            SET friendsemail = array_remove(friendsemail, $friendEmail)
+            WHERE email = $email"""
       sql.update.run.void
   }
 }
