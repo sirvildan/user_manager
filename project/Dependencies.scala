@@ -64,7 +64,7 @@ object Dependencies {
   )
 
   val lib = Def.setting(
-    circe ++ database ++ doobie ++ http4s ++ lihaoyi ++ log4Cats ++ logging ++ pureconfig ++ tests
+    cats ++ catsEffect ++ circe ++ database ++ doobie ++ http4s ++ lihaoyi ++ log4Cats ++ logging ++ pureconfig ++ tests
   )
 }
 
@@ -73,10 +73,10 @@ object Versions {
   val CatsEffect                 = "3.4.5"
   val circeVersion               = "0.15.0-M1"
   val doobieVersion              = "1.0.0-RC2"
-  val flywayVersion              = "8.4.0"
+  val flywayVersion              = "9.12.0"
   val http4sVersion              = "1.0.0-M39"
   val lihaoyiVersion             = "0.8.0"
-  val logbackVersion             = "1.3.0"
+  val logbackVersion             = "1.3.5"
   val logforcatsVersion          = "2.5.0"
   val NewTypeVersion             = "0.4.4"
   val postgresqlVersion          = "42.5.1"
