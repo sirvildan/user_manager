@@ -1,4 +1,4 @@
-import Dependencies._
+//import Dependencies._
 import sbt.Compile
 import sbt.Keys.compile
 ThisBuild / version := "0.1.0-SNAPSHOT"
