@@ -119,6 +119,32 @@ class UserManagerTest extends AnyFlatSpec with TestContainerForAll {
 
       val metadel = serviceResource.use(serv => serv.readUserMeta("deletemeta@mail.ru")).unsafeRunSync()
       assert(metadel.isEmpty)
+
+      //ADD FRIEND'S EMAIL
+      serviceResource
+        .use { dbService =>
+          dbService.createUser(Userinfo("addfriendemail@mail.ru", "addfriendemail", 5)) *>
+          dbService.createUserMeta(
+            UserMeta("addfriendemail@mail.ru", "addemail", List("friendone@mail.ru", "friendtwo@mail.ru"))
+          ) *>
+          dbService.addEmailFriend("addfriendemail@mail.ru", "newfriendthree@mail.ru")
+        }
+        .unsafeRunSync()
+
+      val add_friend_email = serviceResource.use(serv => serv.readUserMeta("addfriendemail@mail.ru")).unsafeRunSync()
+      assert(add_friend_email.get.friendsEmails.contains("newfriendthree@mail.ru"))
+
+      //DELETE FRIEND'S EMAIL
+      serviceResource
+        .use { dbService =>
+          dbService.createUser(Userinfo("deletefriend@mail.ru", "deletefriendmail", 7)) *>
+          dbService.createUserMeta(UserMeta("deletefriend@mail.ru", "delete", List("DELETE1", "DELETE2", "DELETE3"))) *>
+          dbService.deleteEmailFriend("deletefriend@mail.ru", "DELETE2")
+        }
+        .unsafeRunSync()
+
+      val del_friend_email = serviceResource.use(serv => serv.readUserMeta("deletefriend@mail.ru")).unsafeRunSync()
+      assert(!del_friend_email.get.friendsEmails.contains("DELETE2"))
     }
   }
 }
