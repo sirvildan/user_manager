@@ -21,7 +21,7 @@ object Userinfo {
 
   implicit val userCDecoder: Decoder[Userinfo] = deriveDecoder[Userinfo]
 
-  implicit def userEncoder: EntityEncoder[IO, Userinfo] = jsonEncoderOf[IO, Userinfo]
+  implicit def userEncoder: EntityEncoder[IO, Userinfo] = jsonEncoderOf[Userinfo]
 
   implicit def usersDecoder: EntityDecoder[IO, Userinfo] = jsonOf[IO, Userinfo]
 }

@@ -13,7 +13,7 @@ final case class UserMeta(email: String, hobby: String, friendsEmails: List[Stri
 
     implicit val userMetaCDecoder: Decoder[UserMeta] = deriveDecoder[UserMeta]
 
-    implicit def userMetaEncoder: EntityEncoder[IO, UserMeta] = jsonEncoderOf[IO, UserMeta]
+    implicit def userMetaEncoder: EntityEncoder[IO, UserMeta] = jsonEncoderOf[UserMeta]
 
     implicit def usersMetaDecoder: EntityDecoder[IO, UserMeta] = jsonOf[IO, UserMeta]
   }

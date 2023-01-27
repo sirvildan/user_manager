@@ -6,6 +6,14 @@ object Dependencies {
 //    "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
 //  )
 
+  val cats = Seq(
+    "org.typelevel" %% "cats-core" % Versions.Cats,
+  )
+
+  val catsEffect = Seq(
+    "org.typelevel" %% "cats-effect" % Versions.CatsEffect,
+  )
+
   val IntTest = Seq(
     "org.scalatest" %% "scalatest" % scalaTestVersion % "test",
     "com.dimafeng" %% "testcontainers-scala-scalatest" % testcontainersScalaVersion % "test",
@@ -63,13 +71,15 @@ object Dependencies {
 }
 
 object Versions {
+  val Cats               = "2.9.0"
+  val CatsEffect         = "3.4.5"
   val scalaTestVersion = "3.2.12"
   val postgresqlVersion = "42.5.1"
   val flywayVersion = "8.4.0"
   val lihaoyiVersion = "0.6.9"
   //val lihaoyi_sec = "0.7.0"
   val logbackVersion = "1.2.3"
-  val http4sVersion = "0.23.12"
+  val http4sVersion = "1.0.0-M39"
   val circeVersion = "0.14.1"
   val doobieVersion = "1.0.0-RC1"
   val NewTypeVersion = "0.4.4"

@@ -22,7 +22,7 @@ class UserManagerTest extends AnyFlatSpec with TestContainerForAll {
     password = "scala"
   )
 
-  "PostgreSQL container" should "be started" in {
+  "UserManager" should "work correctly" in {
     withContainers { pgContainer =>
       val config = DbModule.Config(
         DbModule.PostgresConfig(
