@@ -31,7 +31,7 @@ class UserService(dbService: DbService[IO]) {
       dbService.updateUser(userinfo)
 
   def getUserMeta(email: String): IO[UserMeta] =
-    logger.info(s"Get usermeta by id $email") *>
+    logger.info(s"Get usermeta by email $email") *>
       dbService.readUserMeta(email).flatMap {
         case Some(value) =>
           value.pure[IO]
