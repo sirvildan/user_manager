@@ -44,7 +44,7 @@ Content-Type: application/json
 {
   "email": "testmail",
   "hobby": "metahobby",
-  "friendsEmails": ["friend8@meta.ru, friend6@meta.ru"]
+  "friendsEmails": ["friend8@meta.ru", "friend6@meta.ru"]
 }
 
 ###
@@ -56,7 +56,7 @@ Content-Type: application/json
 {
   "email": "testmail",
   "hobby": "metahobby",
-  "friendsEmails": ["newfriend1@meta.ru, newfriend2@meta.ru"]
+  "friendsEmails": ["newfriend1@meta.ru", "newfriend2@meta.ru"]
 }
 
 ###
