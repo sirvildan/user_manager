@@ -1,46 +1,45 @@
 package ru.sirv.http
 
-import cats.effect.{IO, Resource}
+import cats.effect.{ IO, Resource }
 import cats.syntax.all._
-import com.comcast.ip4s.{Host, Port}
+import com.comcast.ip4s.{ Host, Port }
 import org.http4s.HttpRoutes
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.circe.toMessageSyntax
 import org.http4s.dsl.io._
 import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.server.{Router, Server}
+import org.http4s.server.{ Router, Server }
 import org.typelevel.log4cats.Logger
 import ru.sirv.service._
 import ru.sirv.domain._
 import ru.sirv.http.HttpService.Config
 
-class HttpService(service: UserService, config: Config)(implicit logger: Logger[IO]){
-  def helloWorldService: HttpRoutes[IO] = HttpRoutes.of[IO] {
-    case GET -> Root / "hello" / name =>
-      logger.info("Received request") >> Ok(s"Hello, $name.")
+class HttpService(service: UserService, config: Config)(implicit logger: Logger[IO]) {
+  def helloWorldService: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root / "hello" / name =>
+    logger.info("Received request") >> Ok(s"Hello, $name.")
   }
 
   def userService: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "users" / email =>
       service.getUser(email).flatMap(Ok(_))
-    case req@POST -> Root / "users" =>
+    case req @ POST -> Root / "users" =>
       req.decodeJson[Userinfo].flatMap(service.addUser) *> Created()
-    case req@PUT -> Root / "users"  =>
+    case req @ PUT -> Root / "users" =>
       req.decodeJson[Userinfo].flatMap(userinfo => service.updateUser(userinfo)) *> Ok()
     case DELETE -> Root / "users" / email =>
       service.deleteUser(email) *> Ok()
 
     case GET -> Root / "usermeta" / email =>
       service.getUserMeta(email).flatMap(Ok(_))
-    case req@POST -> Root / "usermeta" =>
+    case req @ POST -> Root / "usermeta" =>
       req.decodeJson[UserMeta].flatMap(userMeta => service.addUserMeta(userMeta)) *> Created()
-    case req@PUT -> Root / "usermeta" =>
+    case req @ PUT -> Root / "usermeta" =>
       req.decodeJson[UserMeta].flatMap(userMeta => service.updateUserMeta(userMeta)) *> Ok()
     case DELETE -> Root / "usermeta" / email =>
       service.deleteUserMeta(email) >> Ok()
   }
   def services = userService <+> helloWorldService
-  def httpApp = Router("/" -> helloWorldService, "/api" -> services).orNotFound
+  def httpApp  = Router("/" -> helloWorldService, "/api" -> services).orNotFound
   def server: Resource[IO, Server] = EmberServerBuilder
     .default[IO]
     .withHost(Host.fromString(config.host).get)
@@ -50,6 +49,6 @@ class HttpService(service: UserService, config: Config)(implicit logger: Logger[
 
 }
 
-object HttpService{
+object HttpService {
   case class Config(host: String, port: Int)
 }

@@ -4,7 +4,7 @@ import cats.syntax.all._
 import doobie._
 import doobie.implicits._
 import doobie.postgres.implicits._
-import ru.sirv.domain.{UserMeta, Userinfo}
+import ru.sirv.domain.{ UserMeta, Userinfo }
 import ru.sirv.db._
 
 import java.util.UUID
@@ -29,10 +29,11 @@ class UserAccessor extends DbRepository[ConnectionIO] {
 
     query
       .query[(String, Option[String], Option[Int])]
-      .option.map {
-      case Some((e, Some(n), a)) => Userinfo(e, n, a).some
-      case _ => none
-    }
+      .option
+      .map {
+        case Some((e, Some(n), a)) => Userinfo(e, n, a).some
+        case _                     => none
+      }
   }
 
   override def selectUser(email: String): ConnectionIO[Option[Userinfo]] = {
@@ -43,12 +44,12 @@ class UserAccessor extends DbRepository[ConnectionIO] {
 
     query
       .query[(String, Option[String], Option[Int])]
-      .option.map {
-      case Some((e, Some(n), a)) => Userinfo(e, n, a).some
-      case _ => none
-    }
+      .option
+      .map {
+        case Some((e, Some(n), a)) => Userinfo(e, n, a).some
+        case _                     => none
+      }
   }
-
 
   override def updateUser(userinfo: Userinfo): doobie.ConnectionIO[Unit] = {
     val sql =
@@ -78,13 +79,14 @@ class UserAccessor extends DbRepository[ConnectionIO] {
     val query =
       sql"""SELECT email,hobby,friendsemail
             FROM usermeta
-            WHERE email = ${email}""".stripMargin
+            WHERE email = $email""".stripMargin
     query
       .query[(String, String, List[String])]
-      .option.map {
-      case Some((e, n, a)) => UserMeta(e, n, a).some
-      case _ => none
-    }
+      .option
+      .map {
+        case Some((e, n, a)) => UserMeta(e, n, a).some
+        case _               => none
+      }
   }
 
   override def updateUserMeta(usermeta: UserMeta): doobie.ConnectionIO[Unit] = {
@@ -102,7 +104,6 @@ class UserAccessor extends DbRepository[ConnectionIO] {
     sql.update.run.void
   }
 
-
   def addEmailFriend(email: String, friendEmail: String): doobie.ConnectionIO[Unit] = {
     val sql =
       sql"""UPDATE usermeta
@@ -116,6 +117,6 @@ class UserAccessor extends DbRepository[ConnectionIO] {
       sql"""UPDATE usermeta
             SET friendsemail = array_remove(friendsemail, $friendEmail)
             WHERE email = $email"""
-      sql.update.run.void
+    sql.update.run.void
   }
 }

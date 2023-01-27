@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.syntax.all._
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.exception.FlywayValidateException
-import org.flywaydb.core.api.output.{MigrateErrorResult, MigrateResult}
+import org.flywaydb.core.api.output.{ MigrateErrorResult, MigrateResult }
 import org.typelevel.log4cats.Logger
 import ru.sirv.db.DbModule.ConnectionConfig
 
@@ -13,25 +13,25 @@ import scala.jdk.CollectionConverters._
 object DBMigrations {
 
   def migrate(config: ConnectionConfig, fstLocation: String, rstLocations: String*)(
-    implicit log: Logger[IO]
+      implicit log: Logger[IO]
   ): IO[MigrateResult] = {
     val locations = fstLocation +: rstLocations
     log.info(s"Running migrations from locations: [${locations.mkString(", ")}]") *>
-      loadFlyway(config, locations)
-        .map(_.migrate())
-        .flatTap {
-          case e: MigrateErrorResult =>
-            log.error(
-              s"Migration failure after ${e.migrationsExecuted} executed migrations," +
-                s" reason: [${e.error.message}] ${e.error.message}."
-            )
-          case r =>
-            log.info(s"Migration success after ${r.migrationsExecuted} executed migrations.")
-        }
+    loadFlyway(config, locations)
+      .map(_.migrate())
+      .flatTap {
+        case e: MigrateErrorResult =>
+          log.error(
+            s"Migration failure after ${e.migrationsExecuted} executed migrations," +
+              s" reason: [${e.error.message}] ${e.error.message}."
+          )
+        case r =>
+          log.info(s"Migration success after ${r.migrationsExecuted} executed migrations.")
+      }
   }
 
   def validate(config: ConnectionConfig, fstLocation: String, rstLocations: String*)(
-    implicit log: Logger[IO]
+      implicit log: Logger[IO]
   ): IO[Unit] = {
     val locations = fstLocation +: rstLocations
     loadFlyway(config, locations)

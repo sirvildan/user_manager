@@ -4,7 +4,7 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class UserEmailValidationTest extends AnyFunSuite {
 
-  def isEmailValid(email:String): Boolean = email.contains("@")
+  def isEmailValid(email: String): Boolean = email.contains("@")
 
   test("First Test: An Email should be valid") {
     assert(isEmailValid("johndoe@outlook.com"))

@@ -1,10 +1,10 @@
 package ru.sirv.domain
 
 import cats.effect.IO
-import io.circe.{Decoder, Encoder}
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import org.http4s.circe.{jsonEncoderOf, jsonOf}
-import org.http4s.{EntityDecoder, EntityEncoder}
+import io.circe.{ Decoder, Encoder }
+import io.circe.generic.semiauto.{ deriveDecoder, deriveEncoder }
+import org.http4s.circe.{ jsonEncoderOf, jsonOf }
+import org.http4s.{ EntityDecoder, EntityEncoder }
 
 final case class Userinfo(email: String, name: String, age: Option[Int])
 

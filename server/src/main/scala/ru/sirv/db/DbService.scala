@@ -1,6 +1,6 @@
 package ru.sirv.db
 
-import cats.effect.{IO, Resource}
+import cats.effect.{ IO, Resource }
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import ru.sirv.domain._
@@ -39,7 +39,6 @@ object DbService {
       new DbService[IO] {
         override def createUser(userinfo: Userinfo): IO[Unit] =
           accessor.insertUser(userinfo).transact(xa)
-
 
         override def readUserByID(id: UUID): IO[Option[Userinfo]] =
           accessor.selectUserById(id).transact(xa)
