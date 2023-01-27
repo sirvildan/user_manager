@@ -4,7 +4,7 @@ import sbt.Keys.compile
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
-
+lazy val IntegrationTest = config("it").extend(Test)
 lazy val root = (project in file("."))
   .aggregate(server, core)
   .dependsOn(server)
@@ -19,6 +19,7 @@ lazy val root = (project in file("."))
 
 lazy val server = (project in file("server"))
   .dependsOn(core)
+  .configs(IntegrationTest)
   .settings(
     name := "server",
     libraryDependencies ++= Dependencies.lib.value,

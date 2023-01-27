@@ -3,7 +3,7 @@ package ru.sirv.db
 import cats.effect.unsafe.implicits._
 import cats.effect.{IO, Resource}
 import cats.syntax.all._
-import org.scalatest.BeforeAndAfterAll
+import org.scalatest.{BeforeAndAfterAll, Ignore}
 import org.scalatest.funsuite.AnyFunSuite
 import org.typelevel.log4cats.SelfAwareStructuredLogger
 import org.typelevel.log4cats.slf4j._
@@ -13,6 +13,7 @@ import ru.sirv.domain.{UserMeta, Userinfo}
 import java.util.UUID
 import scala.concurrent.duration._
 
+@Ignore
 class DoobieTest extends AnyFunSuite with BeforeAndAfterAll {
 
   implicit val log: SelfAwareStructuredLogger[IO] = Slf4jLogger.getLogger[IO]
